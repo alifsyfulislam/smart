@@ -1,0 +1,11 @@
+<div class="floating-menu">
+    <button class="btn floating-btn rounded-circle shadow" id="menuToggle">
+        <i class="fa fa-bars"></i>
+    </button>
+    <ul class="menu-items list-unstyled bg-light shadow" id="floatingMenu">
+        <li class="text-center"><img src="{{=URL('static', 'images/smart.png')}}" alt="logo" height="50"/></li>
+        <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Profile</a></li>
+        <li><a class="dropdown-item" href="#"><i class="fas fa-cogs me-2"></i>Settings</a></li>
+        <li><a class="dropdown-item text-danger" href="{{=URL('auth', 'logout')}}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+    </ul>
+</div>

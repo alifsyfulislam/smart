@@ -1,0 +1,219 @@
+{{extend 'layout.html'}}
+
+
+<style>
+    .smart-btn input[type="submit"] {
+        background-color: inherit !important;
+        color: inherit !important;
+        border: none;
+        padding: 0;
+        font: inherit;
+        outline: none;
+        cursor: pointer;
+    }
+</style>
+
+<div class="p-2 bg-white h-100">
+    <!-- Part 1 -->
+    <!-- Your Heading -->
+    <div class="d-flex justify-content-between align-items-center bg-light p-2 flex-wrap">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a class="" href="{{=URL('brand','index')}}">Brand</a></li>
+                <li class="breadcrumb-item">Type</a></li>
+            </ol>
+        </nav>
+        <div class="d-flex gap-2 my-1">
+            <a href="{{=URL(c='brand',f='index')}}" class="btn smart-btn btn-outline-secondary btn-sm">
+                <i class="fab fa-slack"></i> Brand
+            </a>
+        </div>
+    </div>
+    <!-- Your Heading -->
+
+    <!-- Your Input -->
+    {{if access_permission==True:}}
+        {{=form.custom.begin}}
+        <div class="d-flex flex-wrap gap-3 mt-2 p-2 border rounded"">
+            <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
+                <div class="mb-1">
+                    <label for="brandName" class="form-label">Type Name</label>
+                    {{=form.custom.widget.level_name}}
+                </div>
+            </div>
+            <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
+                <div class="mb-1"></div>
+            </div>
+            <div id="defaultClass" class="w-100 text-start">
+                <button type="submit" value="Save" name="btn_save" class="my-1 btn smart-btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        {{=form.custom.end}}
+    {{pass}}
+    <!-- Your Input -->
+
+    <!-- Part 2 -->
+    <!-- Your Filter -->
+    <form data-form-id="search_form_brand_type" name="search_form" method="post" action="{{=URL(c='brand',f='brand_type',vars=dict(company_id=company_id,company_name=company_name,brand_id=brand_id,brand_name=brand_name))}}">
+        <div class="d-flex justify-content-between align-items-center flex-wrap bg-light p-2" style="font-size: 14px;">
+            <div class="d-flex flex-column flex-md-row gap-2 align-items-left">
+                <select class="form-select form-select-sm select2 search-select" name="search_type">
+                    <option value="">Select a type</option>
+                    <option value="TypeID" {{='selected' if session.search_type == 'TypeID' else '' }}>Code/Name
+                    </option>
+                </select>
+                <div class="position-relative">
+                    <input type="text" id="searchInput" class="form-control form-control-sm search-input" name="search_value"
+                        placeholder="Select a value" value="{{=session.search_value}}" autocomplete="off">
+                    <div id="autocomplete-list" class="list-group position-absolute" style="z-index: 1000;"></div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="my-1 btn smart-btn btn-outline-secondary btn-sm" name="btn_filter" value="Filter"><i class="fa fa-search"></i> Filter</button>
+                <button class="my-1 btn smart-btn btn-outline-secondary btn-sm" name="btn_all" value="All"><i class="fa fa-sync-alt"></i> Clear</button>
+                <button class="my-1 btn smart-btn btn-outline-secondary btn-sm" name="btn_download"
+                    value="Download"><i class="fa fa-download"></i> Download</button>
+            </div>
+        </div>
+    </form>
+    <!-- Your Filter -->
+    
+    <!-- Part 3 -->
+    <!-- Your data table -->
+    <div class="table-responsive p-2 bg-light">
+        <table id="dataTable" class="table table-striped table-bordered compact-table" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Type Code</th>
+                    <th>Type Name</th>
+                    <th>Brand Code</th>
+                    <th>Brand Name</th>
+                    <th>Updated By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ for row in records: }}
+                <tr>
+                    <td>{{=row.level_id}}</td>
+                    <td>
+                        <a class="m-0 p-0" href="{{=URL(c='brand',f='brand_type_flavor',vars=dict(company_id=row.level0,company_name=row.level0_name,brand_id=row.level1,brand_name=row.level1_name,type_id=row.level_id,type_name=row.level_name))}}">
+                            {{=row.level_name}}
+                        </a>
+                    </td>
+                    <td>{{=row.parent_level_id}}</td>
+                    <td>{{=row.parent_level_name}}</td>
+                    <td>{{=row.updated_by}},<label class="raw-date">{{=row.updated_on}}</label></td>
+                </tr>
+                {{ pass }}
+            </tbody>
+        </table>
+    </div>
+    <!-- Your data table -->
+    
+    <!-- Part 4-->
+    <!-- Your manual pagination -->
+    <div class="d-flex justify-content-between align-items-center my-2 mx-2 flex-wrap">
+        <!-- Left: Info -->
+        <div>
+            <small style="font-size: 12px;">
+                {{if (page+1)*items_per_page < totalCount:}}
+                    {{=f"Showing {(page)*items_per_page}-{(page+1)*items_per_page} of {totalCount}"}}
+                {{else:}}
+                    {{=f"Showing {(page)*items_per_page}-{totalCount} of {totalCount}"}}
+                {{pass}}
+            </small>
+        </div>
+        <!-- Right: Pagination -->
+        <div class="dataTables_paginate paging_full_numbers" id="brandTable_paginate">
+            <ul class="pagination mb-0">
+                <!-- First -->
+                <li class="paginate_button page-item first {{='disabled' if (page)*items_per_page == 0 else ''}}"
+                    id="brandTable_first">
+                    <a href="{{=URL(args=[0])}}" class="page-link"><i class="fas fa-angles-left"></i></a>
+                </li>
+                <!-- Previous -->
+                <li class="paginate_button page-item previous {{='disabled' if (page)*items_per_page == 0 else ''}}"
+                    id="brandTable_previous">
+                    <a href="{{=URL(args=[page-1])}}" class="page-link"><i class="fas fa-angle-left"></i></a>
+                </li>
+                <!-- Next -->
+                <li class="paginate_button page-item next {{='disabled' if (page+1)*items_per_page >= totalCount else ''}}"
+                    id="brandTable_next">
+                    <a href="{{=URL(args=[page+1])}}" class="page-link"><i class="fas fa-angle-right"></i></a>
+                </li>
+                <!-- Last -->
+                <li class="paginate_button page-item last {{='disabled' if (page+1)*items_per_page >= totalCount else ''}}"
+                    id="brandTable_last">
+                    <a href="{{=URL(args=[(totalCount - 1) // items_per_page])}}" class="page-link"><i class="fas fa-angles-right"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Your manual pagination -->
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#defaultClass input[type="submit"]').removeClass().addClass('')
+        $('#defaultClass div').addClass('my-1 btn smart-btn btn-outline-secondary btn-sm save-btn-man');
+
+        $('.btn-close').on('click', function () {
+            {{session.message = None}}
+        });
+
+        $('.smart-btn input[type="button"]').on('click', function (e) {
+            e.preventDefault();
+            const formId = $(this).closest('.smart-btn').data('form-id');
+            $('#' + formId).submit();
+        });
+
+        $('#searchInput').on('keyup', function () {
+            let searchValue = $(this).val();
+            if (searchValue.length < 2) {
+                $('#autocomplete-list').empty();
+                return;
+            }
+            $('#autocomplete-list').html(
+                '<div class="list-group-item text-center"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</div>'
+            );
+            $.ajax({
+                url: base_url + 'common_api/get_brand_type',
+                type: 'POST',
+                data: { 
+                    brand_id: `{{=brand_id}}`,
+                    search: searchValue 
+                },
+                success: function (data) {
+                    $('#autocomplete-list').empty();
+                    if (!data) return;
+                    let items = data.split(',');
+                    items.forEach(item => {
+                        if (item.trim() === '') return;
+                        let parts = item.split('|');
+                        let id = parts[0];
+                        let name = parts[1];
+                        $('#autocomplete-list').append(
+                            `<button type="button" class="list-group-item list-group-item-action" data-id="${id}" data-info="${id}|${name}">${id} | ${name}</button>`
+                        );
+                    });
+                    // Handle click
+                    $('#autocomplete-list button').on('click', function () {
+                        const info = $(this).data('info');
+                        const id = $(this).data('id');
+                        $('#searchInput').val(info); // or use `id` if needed
+                        $('#autocomplete-list').empty();
+                    });
+                },
+                error: function (xhr) {
+                    console.error('Error:', xhr.responseText);
+                }
+            });
+        });
+    });
+</script>

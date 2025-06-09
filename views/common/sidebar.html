@@ -1,0 +1,247 @@
+<nav id="sidebar" class="sidebar {{='collapsed' if session.btn_sidebar == True else ''}}">
+    <div>
+        <ul class="nav flex-column" id="sidebarMenu">
+            <!-- Home -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link {{='active' if visited_controller == 'home' else ''}}" title="Home"
+                    href="{{=URL('home', 'index')}}"><i class="fas fa-home"></i> <span>Home</span></a>
+            </li>
+            <!-- Home -->
+            <!-- Basic Settings -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link {{='active' if visited_controller in ['brand'] else ''}}" href="#"
+                    data-bs-toggle="collapse" data-bs-target="#basicSubmenu" aria-expanded="false"
+                    title="Basic Settings"><i class="fas fa-cogs"></i> <span>Basic
+                        Settings</span></a>
+                <div class="collapse" id="basicSubmenu" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        {{if check_role('rm_item_manage') == True or check_role('rm_item_view') == True:}}
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link {{='active' if visited_controller == 'brand' else ''}}" title="Brand"
+                                href="{{=URL('brand', 'index')}}"><i class="fab fa-slack"></i>
+                                <span>Brand</span></a>
+                        </li>
+                        {{pass}}
+                        {{if check_role('rm_item_cat_unit_manage') == True or check_role('rm_item_cat_unit_view') == True:}}
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link {{='active' if visited_controller == 'unit' else ''}}" title="Unit" 
+                                href="{{=URL('unit', 'index')}}"><i class="fas fa-cube"></i> <span>Unit</span></a>
+                        </li>
+                        {{pass}}
+                        {{if check_role('rm_item_manage') == True or check_role('rm_item_view') == True:}}
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link {{='active' if visited_controller == 'item' else ''}}" title="Item" 
+                                href="{{=URL('item', 'index')}}"><i class="fas fa-boxes"></i> <span>Item</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link {{='active' if visited_controller == 'item_batch' else ''}}" title="Item" 
+                                href="{{=URL('item_batch', 'index')}}"><i class="fas fa-barcode"></i> <span>Item Batch</span></a>
+                        </li>
+                        {{pass}}
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Branch" href="#"><i
+                                    class="fas fa-store"></i><span>Branch</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Distributor" href="#"><i
+                                    class="fas fa-truck"></i><span>Distributor</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Basic Settings -->
+            <!-- Field Force -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu1"
+                    aria-expanded="false" title="Field Force"><i class="fas fa-tools"></i> <span>Field Force</span></a>
+                <div class="collapse" id="basicSubmenu1" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="National" href="#"><i class="fab fa-unity"></i>
+                                <span>National</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Field" href="#"><i class="fas fa-project-diagram"></i>
+                                <span>Field</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Supervisor" href="#"><i
+                                    class="fas fa-user-cog"></i><span>Supervisor</span></a>
+                        </li>
+
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Supervisor Area" href="#"><i
+                                    class="fas fa-user-gear"></i><span>Supervisor Area</span></a>
+                        </li>
+
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="PSR" href="#"><i class="fas fa-user"></i><span>PSR</span></a>
+                        </li>
+
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="PSR Visit Plan" href="#"><i class="fas fa-calendar"></i><span>PSR
+                                    Visit Plan</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Field Force -->
+            <!-- Outlet -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu2"
+                    aria-expanded="false" title="Outlet"><i class="fas fa-store"></i> <span>Outlet</span></a>
+                <div class="collapse" id="basicSubmenu2" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Channel" href="#"><i class="fas fa-tags"></i>
+                                <span>Channel</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Grade" href="#"><i class="fas fa-bookmark"></i>
+                                <span>Grade</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Outlet" href="#"><i class="fas fa-shop"></i>
+                                <span>Outlet</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Outlet -->
+            <!-- Inventory -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu3"
+                    aria-expanded="false" title="Inventory"><i class="fa fa-warehouse"></i> <span>Inventory</span></a>
+                <div class="collapse" id="basicSubmenu3" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Distributor GR" href="#"><i class="fas fa-boxes"></i>
+                                <span>Distributor GR</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Internal Transfer" href="#"><i class="fas fa-sync-alt"></i>
+                                <span>Internal Transfer</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="External Tranfer" href="#"><i class="fa fa-truck-moving"></i>
+                                <span>External Tranfer</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Internal Adjusment" href="#"><i class="fa fa-sliders"></i>
+                                <span>Internal Adjusment</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Inventory -->
+            <!-- Transaction -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu4"
+                    aria-expanded="false" title="Order & Invoice"><i class="fas fa-sticky-note"></i> <span>Order &
+                        Invoice</span></a>
+                <div class="collapse" id="basicSubmenu4" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Order" href="#"><i class="fas fa-file-alt"></i>
+                                <span>Order</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Market Return" href="#"><i class="fas fa-clipboard"></i>
+                                <span>Market Return</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Invoice" href="#"><i class="fa fa-receipt"></i>
+                                <span>Invoice</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Direct Sales" href="#"><i class="fas fa-shopping-basket"></i>
+                                <span>Direct Sales</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Transaction -->
+            <!-- Promotion -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu5"
+                    aria-expanded="false" title="Promotion"><i class="fas fa-bullhorn"></i> <span>Promotion</span></a>
+                <div class="collapse" id="basicSubmenu5" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="DB Wise Scheme" href="#"><i class="fas fa-lightbulb"></i>
+                                <span>Promo Scheme</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Promotion -->
+            <!-- Reports -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu6"
+                    aria-expanded="false" title="Reports"><i class="fas fa-chart-line"></i> <span>Reports</span></a>
+                <div class="collapse" id="basicSubmenu6" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Live Order" href="#"><i class="fas fa-desktop"></i> <span>Live
+                                    Order</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Reports" href="#"><i class="fas fa-archive"></i>
+                                <span>Reports</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Reports -->
+            <!-- Utility -->
+            <li class="nav-item main-menu-item">
+                <a class="nav-link" href="#" data-bs-toggle="collapse" data-bs-target="#basicSubmenu7"
+                    aria-expanded="false" title="Tools"><i class="fas fa-wrench"></i> <span>Tools</span></a>
+                <div class="collapse" id="basicSubmenu7" data-bs-parent="#sidebarMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Utility" href="#"><i class="fas fa-tools"></i>
+                                <span>Utility</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="Change Password" href="#"><i class="fa fa-key"></i> <span>Change
+                                    Password</span></a>
+                        </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link" title="User Log" href="#"><i class="fa fa-search-plus"></i> <span>User
+                                    Log</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <!-- Utility -->
+        </ul>
+        <form id="search_form_sidebar" name="search_form_sidebar" method="post" action="{{=URL(c='home',f='sidebar_collapse')}}">
+            <div class="text-center my-3 bottom-sidebar-toggle">
+                <button type="submit" id="sidebarToggleBottom" name="btn_sidebar"  class="btn btn-outline-secondary btn-sm">
+                    <i class="fas {{='fa-angle-double-left' if session.btn_sidebar != True else 'fa-angle-double-right'}}"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+</nav>
+
+
+<script>
+    $(document).ready(function () {
+        $('.sub-menu-item .nav-link').each(function () {
+            if ($(this).hasClass('active')) {
+                const $collapseDiv = $(this).closest('.collapse');
+                const $mainMenuItem = $collapseDiv.closest('.main-menu-item');
+                const $mainNavLink = $mainMenuItem.find('> .nav-link');
+                // Add active to parent main menu nav link
+                $mainNavLink.addClass('active');
+                // Expand the submenu
+                $collapseDiv.addClass('show');
+                // Ensure toggle button reflects expanded state
+                $mainNavLink.attr('aria-expanded', 'true');
+            }
+        });
+    });
+</script>

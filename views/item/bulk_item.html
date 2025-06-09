@@ -1,0 +1,79 @@
+{{extend 'layout.html'}}
+
+
+<style>
+    .smart-btn input[type="submit"] {
+        background-color: inherit !important;
+        color: inherit !important;
+        border: none;
+        padding: 0;
+        font: inherit;
+        outline: none;
+        cursor: pointer;
+    }
+</style>
+
+<div class="p-2 bg-white h-100">
+    <!-- Part 1 -->
+    <!-- Your Heading -->
+    <div class="d-flex justify-content-between align-items-center bg-light p-2 flex-wrap">
+        <h5 class="my-1 table-title">Item</h5>
+        <div class="d-flex gap-2 my-1 {{='d-block' if access_permission == True else 'd-none'}}">
+            <a href="{{=URL(c='item',f='index')}}" class="btn smart-btn btn-outline-secondary btn-sm" name="btn_upload" value="Upload">
+                <i class="fas fa-boxes"></i> Item
+            </a>
+        </div>
+    </div>
+    <!-- Your Heading -->
+    
+    <!-- Part 2 -->
+    <!-- Bulk Unit -->
+    <div class="p-2">
+        <small class="flex justify-content-center"> 
+            <i>
+                Download this 
+                <a href="{{=URL('static','excel_template/item_format.xlsx')}}">Excel Template</a> , 
+                fillup with data and copy (maximum 100 records)-paste bellow to upload 
+            </i>
+        </small>
+    </div>
+    <div class="p-2">
+        <form data-form-id="search_form_bulk_unit" name="batch_client" method="post" action="{{=URL(c='item',f='bulk_item')}}">
+            <div class="w-100">
+                <textarea name="excel_data" id="excel_data" class="w-100 border shadow form-control" style="min-height: 300px; resize: none;"></textarea>
+            </div>
+            <div class="w-100 text-start">
+                <button type="submit" value="Upload" name="btn_upload" class="my-2 btn smart-btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-upload"></i> Upload
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="p-2">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <small class="text-muted">Total Record: {{=total_row}}</small>
+            <small class="text-success">Record Saved: {{=count_inserted}}</small>
+            <small class="text-danger">Record Reject: {{=count_error}}</small>
+        </div>
+        
+        <textarea name="error_data" id="error_data" class="w-100 border shadow form-control" style="min-height: 150px; resize: none;">{{=error_str}}</textarea>
+    </div>
+    <!-- Bulk Unit -->
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#defaultClass input[type="submit"]').removeClass().addClass('')
+        $('#defaultClass div').addClass('my-1 btn smart-btn btn-outline-secondary btn-sm save-btn-man');
+
+        $('.btn-close').on('click', function () {
+            {{session.message = None}}
+        });
+
+        $('.smart-btn input[type="button"]').on('click', function (e) {
+            e.preventDefault();
+            const formId = $(this).closest('.smart-btn').data('form-id');
+            $('#' + formId).submit();
+        });
+    });
+</script>

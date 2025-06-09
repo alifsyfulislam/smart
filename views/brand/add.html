@@ -1,0 +1,72 @@
+{{extend 'layout.html'}}
+
+<div class="p-3 bg-white h-100">
+    <!-- Part 1 -->
+    <!-- Your Heading -->
+    <div class="d-flex justify-content-between align-items-center bg-light p-2 flex-wrap">
+        <h5 class="my-1 table-title">Brand</h5>
+        <div class="d-flex gap-2 my-1">
+            <a href="{{=URL(c='brand',f='index')}}" class="btn smart-btn btn-outline-secondary btn-sm">
+                <i class="fab fa-slack"></i> Brand
+            </a>
+        </div>
+    </div>
+    <!-- Your Heading -->
+
+    <!-- Your Form -->
+    {{if response.flash:}}
+        {{errors = response.flash}}
+        <div class="m-0 p-0 alert alert-danger alert-dismissible fade show" role="alert">
+            <ul class="m-0">
+                {{ for error in errors: }}
+                    <li style="font-size: 14px;" class="py-1">{{=error}}</li>
+                {{ pass }}
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {{pass}}
+
+    {{if access_permission==True:}}
+    <form action="{{=URL(c='brand',f='add')}}" method="post" class="d-flex flex-wrap gap-3 mt-4 p-2 border rounded" style="min-height: 200px;" enctype="multipart/form-data">
+        <!-- Left Part: Input fields -->
+        <div class="flex-grow-1" style="flex: 5 5 40%; min-width: 300px;">
+            <!-- Full Width -->
+            <div class="mb-3 mt-3 mx-3">
+                <img id="imagePreview" src="{{=URL('static','images/dummy_brand.png')}}" alt="Brand Logo"
+                class="img-fluid border rounded" style="max-height: 200px;">
+            </div>
+        </div>
+        <!-- Right Part: Image -->
+        <div class="flex-grow-1" style="flex: 5 5 40%;">
+            <div class="d-flex flex-column align-items-start justify-content-center mb-3">
+                <label for="description" class="form-label">Brand Logo</label>
+                <input type="file" class="form-control" id="brandImage" name="image_path" accept="image/*">
+            </div>
+
+            <div class="mb-3">
+                <label for="brandName" class="form-label">Brand Name</label>
+                <input type="text" class="form-control" id="brandName" name="level_name" placeholder="Enter brand name">
+            </div>
+        </div>
+        
+        <div class="w-100 mb-3">
+            <button type="submit" class="btn smart-btn btn-outline-secondary btn-sm" value="Save" name="btn_save">
+                <i class="fas fa-save"></i> Submit
+            </button>
+        </div>
+        <!-- Full Width -->
+    </form>
+    {{pass}}
+    <!-- Your Form -->
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#brandImage').on('change', function () {
+            const [file] = this.files;
+            if (file) {
+                $('#imagePreview').attr('src', URL.createObjectURL(file));
+            }
+        });
+    });
+</script>

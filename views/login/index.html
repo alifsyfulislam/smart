@@ -1,0 +1,20 @@
+{{extend 'layout.html'}}
+
+<div class="login-wrapper">
+    <div class="login-box shadow">
+        <img src="{{=URL('static', 'images/smart.png')}}" alt="SMART Logo" width="125">
+        <form method="post" action="{{=URL('login', 'auth')}}">
+            <div class="mb-3">
+                <input type="text" name="username" class="form-control" placeholder="Username" required>
+            </div>
+            <div class="mb-3">
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+            <div class="form-check text-start mb-3">
+                <input class="form-check-input" type="checkbox" id="rememberMe" name="remember" checked>
+                <label class="form-check-label" for="rememberMe">Remember me!</label>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+    </div>
+</div>

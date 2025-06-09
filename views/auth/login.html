@@ -1,0 +1,148 @@
+{{extend 'layout.html'}}
+
+
+<style>
+    .lwrapper_dailog {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+        max-height: 500px;
+    }
+
+    .bg-transcom {
+        background-color: #0000A3;
+    }
+
+    .login-wrapper {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .form-field {
+        margin-bottom: 15px;
+        border-radius: 20px;
+        box-shadow: inset 4px 4px 4px #0000a330, inset -4px -4px 4px #fff;
+    }
+
+    .form-field input {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: none;
+        font-size: 1rem;
+        color: #333;
+        padding: 10px 15px;
+    }
+
+    .btn-transcom {
+        width: 100%;
+        height: 40px;
+        background-color: #0000A3;
+        color: #fff;
+        border-radius: 25px;
+        border: none;
+        letter-spacing: 1px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-transcom:hover {
+        background-color: #000088;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus {
+        transition: background-color 9999s ease-in-out 0s;
+    }
+
+    @media screen and (max-width: 576px) {
+        .login-wrapper {
+            padding: 1rem;
+            border-radius: 15px;
+        }
+
+        .btn-transcom {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+<div class="d-flex justify-content-center align-items-center" style="height:calc(100vh - 50px)">
+    <div class="lwrapper_dailog">
+        <form id="form" name="form" method="post" action="{{=URL(c='auth',f='login')}}">
+            <div class="text-center mb-3">
+                <img src="{{=URL('static','images/tcpl_logo.png')}}" alt="SMART Logo" class="img-fluid"
+                    style="max-height: 60px;">
+            </div>
+
+            {{ if response.flash: }}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <small><strong>Warning!</strong> {{=response.flash}}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {{ pass }}
+
+            <input type="hidden" name="cid" id="cid" value="SMART">
+            <input type="hidden" name="loginSyncCode" id="loginSyncCode" value="" />
+            <input type="hidden" name="userAgentKey" id="userAgentKey" value="" />
+
+            <div class="form-field">
+                <input type="text" name="uid" id="uid" placeholder="User ID">
+            </div>
+
+            <div class="form-field">
+                <input type="password" name="password" id="passwordid" placeholder="Password">
+            </div>
+
+            <div class="d-flex align-items-center mb-3">
+                <input class="form-check-input me-2" type="checkbox" name="cmb_savpass" id="cmb_savpass" value="YES" />
+                <small>Remember me!</small>
+            </div>
+
+            <button type="submit" class="btn-transcom" id="btnlogin" name="btnlogin" value="Login">Login</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    $(() => {
+        var syncCode = Math.floor(1000 + Math.random() * 9000);
+        $('#loginSyncCode').val(syncCode)
+
+        $('#btnlogin').click(() => {
+            console.log('Hi');
+            var cmb_savpass = $("input[name='cmb_savpass']:checked").val()
+            var cid = $('#cid').val();
+            var userid = $('#uid').val();
+            var pass = $('#passwordid').val();
+            if (cmb_savpass == "YES") {
+                localStorage.saveCid = "";
+                localStorage.saveUid = "";
+                localStorage.savePass = "";
+                localStorage.saveChecked = "";
+
+                if (typeof (Storage) != "undefined") {
+                    localStorage.saveCid = cid
+                    localStorage.saveUid = userid
+                    localStorage.savePass = pass
+                    localStorage.saveChecked = cmb_savpass;
+                } else {
+                    alert("Error: local storage. Please communicate with system administrator.");
+                };
+            } else {
+                localStorage.saveCid = "";
+                localStorage.saveUid = "";
+                localStorage.savePass = "";
+                localStorage.saveChecked = "";
+            }
+        });
+    })
+</script>

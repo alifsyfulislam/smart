@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        {{=response.title}}
+    </title>
+    <link rel="icon" type="image/x-icon" href="{{=URL('static', 'images/smart.png')}}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{=URL('static', 'asset/css/bootstrap.min.css')}}" rel="stylesheet" />
+    <link href="{{=URL('static', 'asset/fontawsome/css/all.min.css')}}" rel="stylesheet" />
+    <link href="{{=URL('static', 'asset/css/css2.css')}}" rel="stylesheet" />
+    <link href="{{=URL('static', 'asset/css/dataTables.bootstrap5.min.css')}}" rel="stylesheet" />
+    <link href="{{=URL('static', 'asset/css/jquery-ui.css')}}" rel="stylesheet" />
+    <link href="{{=URL('static', 'asset/css/select2.min.css')}}" rel="stylesheet" />
+    <!-- custom css -->
+    <link href="{{=URL('static','css/custom.css')}}" rel="stylesheet">
+    <!-- custom css -->
+    <script src="{{=URL('static', 'asset/js/jquery-3.7.1.min.js')}}"></script>
+    <script src="{{=URL('static', 'asset/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{=URL('static', 'asset/js/jquery-ui.min.js')}}"></script>
+    <script src="{{=URL('static', 'asset/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{=URL('static', 'asset/js/dataTables.bootstrap5.min.js')}}"></script>
+    <script src="{{=URL('static', 'asset/js/select2.min.js')}}"></script>
+    <!-- custom js -->
+    <script src="{{=URL('static','js/custom.js')}}"></script>
+    <!-- custom js -->
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    {{if div_topbar != False:}}
+        {{block topbar}} {{include 'common/topbar.html'}} {{end}}
+        {{block floatingbar}} {{include 'common/floatingbar.html'}} {{end}}
+    {{pass}}
+    <!-- Top Navbar -->
+    
+    <!-- Wrapper -->
+    <div class="{{='wrapper' if div_topbar != False else 'lwrapper'}}">
+        <!-- Sidebar -->
+        {{if div_sidebar != False:}}
+            {{block sidebar}} {{include 'common/sidebar.html'}} {{end}}
+        {{pass}}
+        <!-- Sidebar -->
+        <!-- Main Content -->
+        <main class="content" id="mainContent">
+            {{include}}
+        </main>
+        <!-- Main Content -->
+    </div>
+    <!-- Wrapper -->
+    
+    <!-- Footer -->
+    {{block footer}} {{include 'common/footer.html'}} {{end}}
+    <!-- Footer -->
+    <script>
+        var base_url = location.protocol + "//" + location.hostname + (location.port ? ":" + location.port : "") + "/{{=request.application}}/";
+    </script>
+</body>
+</html>
