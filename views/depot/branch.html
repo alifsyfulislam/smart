@@ -17,7 +17,9 @@
     <!-- Part 1 -->
     <!-- Your Heading -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-item-start bg-light p-2 flex-wrap">
-        <h5 class="my-1 table-title">Item Batch</h5>
+        <h5 class="my-1 table-title d-flex align-items-center justify-content-between">{{=response.title}}
+            <div id="toggleInputForm" class="ms-2" style="cursor: pointer;"><i class="fa fa-arrow-alt-circle-up"></i></div>
+        </h5>
         <div class="d-flex flex-wrap gap-2 my-1 {{='d-block' if access_permission == True else 'd-none'}}">
             {{if visited_controller not in ['brand'] and access_permission==True:}}
             <!-- <a href="{{#=URL(c='item',f='add')}}" class="btn smart-btn btn-outline-secondary btn-sm">
@@ -31,15 +33,55 @@
         </div>
     </div>
     <!-- Your Heading -->
+
+    <!-- Your Input -->
+    {{if access_permission==True:}}
+        {{=form.custom.begin}}
+        <div class="d-flex flex-wrap gap-3 mt-2 p-2 border rounded d-block" id="inputForm">
+            <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
+                <div class="mb-1">
+                    <label for="brandName" class="form-label">Branch ID</label>
+                    {{=form.custom.widget.sup_depot_id}}
+                </div>
+
+                <div class="mb-1">
+                    <label for="brandName" class="form-label">Branch Name</label>
+                    {{=form.custom.widget.name}}
+                </div>
+            </div>
+            <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
+                <div class="mb-1">
+                    <label for="brandName" class="form-label">Branch Name (Bn)</label>
+                    {{=form.custom.widget.name_bn}}
+                </div>
+
+                <div class="mb-1">
+                    <label for="brandName" class="form-label">Status</label>
+                    <div>
+                        {{=form.custom.widget.status}}
+                    </div>
+                </div>
+            </div>
+            <div id="defaultClass" class="w-100 text-start">
+                <button type="submit" value="Save" name="btn_save" class="my-1 btn smart-btn btn-outline-secondary btn-sm">
+                    <i class="fa fa-save"></i> Save
+                </button>
+            </div>
+        </div>
+        {{=form.custom.end}}
+    {{pass}}
+    <!-- Your Input -->
     
     <!-- Part 2 -->
     <!-- Your Filter -->
-    <form id="search_form" name="search_form" method="post" action="{{=URL(c='item_batch',f='index')}}">
+    <form id="search_form" name="search_form" method="post" action="{{=URL(c='depot',f='branch')}}">
         <div class="d-flex flex-column flex-md-row justify-content-between align-item-start flex-wrap bg-light p-2" style="font-size: 14px;">
             <div class="d-flex flex-wrap flex-md-row gap-2 align-items-left my-1">
                 <select id="searchParam" class="form-select form-select-sm select2 search-select" name="search_type">
                     <option value="">Select a type</option>
-                    <option value="ItemID" {{='selected' if session.search_type == 'ItemID' else '' }}> Item
+                    <option value="BranchID" {{='selected' if session.search_type == 'BranchID' else '' }}> Branch
+                    </option>
+                    <option value="Status" {{='selected' if session.search_type == 'Status' else '' }}> Status
                     </option>
                 </select>
                 <div class="position-relative">
@@ -69,20 +111,18 @@
         <table id="dataTable" class="table table-striped table-bordered compact-table" style="width:100%">
             <thead>
                 <tr>
-                    <th>Item Code</th>
-                    <th>Item Name</th>
-                    <th>Batch</th>
-                    <th>Expiary Date</th>
+                    <th>Branch Code</th>
+                    <th>Branch Name</th>
+                    <th>Status</th>
                     <th>Updated By</th>
                 </tr>
             </thead>
             <tbody>
                 {{ for row in records: }}
                 <tr class="">
-                    <td>{{=row.item_id}}</td>
+                    <td>{{=row.sup_depot_id}}</td>
                     <td>{{=row.name}}</td>
-                    <td>{{=row.batch_id}}</td>
-                    <td>{{=row.expiary_date}}</td>
+                    <td>{{=row.status}}</td>
                     <td>{{=row.updated_by}},<label class="raw-date">{{=row.updated_on}}</label></td>
                 </tr>
                 {{ pass }}
@@ -139,6 +179,20 @@
 
 <script>
     $(document).ready(function () {
+        $('.select2').select2({
+            multiple: false,
+            tags: false, 
+            allowClear: true,
+            placeholder: "Select a type"
+        });
+
+        $('#sm_sup_depot_status').select2({
+            multiple: false,
+            tags: false, 
+            allowClear: true,
+            placeholder: "Select a type"
+        })
+
         $('#searchParam').val(`{{=session.search_type}}`)
         $('#searchInput').val(`{{=session.search_value}}`)
         $('#dataTable').DataTable({
@@ -160,7 +214,7 @@
             scrollX: true,
             columnDefs: [
                 {
-                    targets: [0,1,2,3,4],
+                    targets: [0,1,2,3],
                     className: 'wrap-col',
                 }
             ],
@@ -192,13 +246,6 @@
             $(this).text(formatted);
         });
 
-        $('.select2').select2({
-            multiple: false,
-            tags: false, 
-            allowClear: true,
-            placeholder: "Select a type"
-        });
-
         $('.btn-close').on('click', function () {
             {{session.message = None}}
         });
@@ -219,14 +266,23 @@
                     '<div class="list-group-item text-center"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</div>'
                 );
                 $.ajax({
-                    url: base_url + 'common_api/get_item',
+                    url: base_url + 'common_api/get_branch',
                     type: 'POST',
                     data: { parameter: searchParam,search: searchValue },
                     success: function (data) {
                         $('#autocomplete-list').empty();
                         if (!data) return;
                         let items = data.split(',');
-                        if (searchParam == 'ItemID'){
+                        if (searchParam == 'Status'){
+                            items.forEach(item => {
+                                if (item.trim() === '') return;
+                                let parts = item.split('|');
+                                $('#autocomplete-list').append(
+                                    `<button type="button" class="list-group-item list-group-item-action" data-id="${parts[0]}" data-info="${parts[0]}">${parts[0]}</button>`
+                                );
+                            });
+                        }
+                        if (searchParam == 'BranchID'){
                             items.forEach(item => {
                                 if (item.trim() === '') return;
                                 let parts = item.split('|');

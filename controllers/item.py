@@ -63,11 +63,11 @@ def index():
             search_value=search_value
         )))
     if btn_all:
-        session.btn_filter=''
-        session.btn_all=''
+        session.btn_filter=None
+        session.btn_all=None
         session.btn_download=None
         session.search_type=None
-        session.search_value=None
+        session.search_value=''
         reqPage=0
     
     if len(request.args) > 0:
@@ -267,7 +267,7 @@ def download_excel():
     
     session.btn_download=None
     session.search_type=None
-    session.search_value=None
+    session.search_value=''
     
     return output.read()
 

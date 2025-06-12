@@ -260,6 +260,22 @@ db.define_table("sm_depot_user",
     migrate=False,
 )
 
+db.define_table("sm_sup_depot",
+    Field("cid", "string", requires=IS_NOT_EMPTY(), default=session.cid),
+    Field("sup_depot_id","string",requires=[IS_NOT_EMPTY(),IS_ALPHANUMERIC(error_message=T("must be alphanumeric!")),IS_LENGTH(20, error_message="enter maximum 20 character"),],),
+    Field("name","string",requires=[IS_NOT_EMPTY(),IS_LENGTH(50, error_message="enter maximum 50 character"),],),
+    Field("name_bn","string",default=""),
+    Field("sequence_no", "integer", default=0),
+    Field("email", "string", default=""),
+    Field("contact", "string", default=""),
+    Field("contact_2", "string", default=""),
+    Field("address", "string", default=""),
+    Field("address_bn", "string", default=""),
+    Field("status", "string", requires=IS_IN_SET(("ACTIVE", "INACTIVE")), default="ACTIVE"),
+    signature,
+    migrate=False,
+)
+
 db.define_table("sm_depot",
     Field("cid", "string", requires=IS_NOT_EMPTY(), default=session.cid),
     Field("sup_depot_id", "string", requires=IS_NOT_EMPTY()),

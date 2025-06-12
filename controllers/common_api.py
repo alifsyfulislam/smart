@@ -197,6 +197,111 @@ def get_unit():
     )
     return ','.join(f"{row.cat_type_id}|{row.cat_type_name}" for row in rows)
 
+def get_branch():
+    cid = session.cid
+    parameter = request.vars.parameter or ''
+    search = str(request.vars.search) or ''
+    
+    if cid == '' or cid == None or parameter == '' or parameter == None:
+        return
+    
+    query = ''
+    rows = ''
+    data = ''
+    query = (db.sm_sup_depot.cid == cid)
+    
+    if parameter == 'BranchID':
+        query &= (
+            (
+                (db.sm_sup_depot.sup_depot_id.contains(search)) |
+                (db.sm_sup_depot.name.contains(search))
+            )
+        )
+        rows = db(query).select(
+            db.sm_sup_depot.sup_depot_id,
+            db.sm_sup_depot.name,
+            groupby=[db.sm_sup_depot.sup_depot_id],
+            orderby=~db.sm_sup_depot.sup_depot_id
+        )
+        data =  ','.join(f"{row.sup_depot_id} | {row.name}" for row in rows)
+        
+    if parameter == 'Status':
+        query &= (
+            (db.sm_sup_depot.status.contains(search))
+        )
+        rows = db(query).select(
+            db.sm_sup_depot.status,
+            groupby=db.sm_sup_depot.status,
+            orderby=~db.sm_sup_depot.status
+        )
+        data =  ','.join(f"{row.status}" for row in rows)
+    return data
+
+def get_depot():
+    cid = session.cid
+    parameter = request.vars.parameter or ''
+    search = str(request.vars.search) or ''
+    
+    if cid == '' or cid == None or parameter == '' or parameter == None:
+        return
+    
+    query = ''
+    rows = ''
+    data = ''
+    query = (db.sm_depot.cid == cid)
+    
+    if parameter == 'DepotID':
+        query &= (
+            (
+                (db.sm_depot.depot_id.contains(search)) |
+                (db.sm_depot.name.contains(search))
+            )
+        )
+        rows = db(query).select(
+            db.sm_depot.depot_id,
+            db.sm_depot.name,
+            groupby=[db.sm_depot.depot_id],
+            orderby=~db.sm_depot.depot_id
+        )
+        data =  ','.join(f"{row.depot_id} | {row.name}" for row in rows)
+        
+    if parameter == 'TownID':
+        query &= (
+            (
+                (db.sm_depot.town_id.contains(search)) |
+                (db.sm_depot.town_name.contains(search))
+            )
+        )
+        rows = db(query).select(
+            db.sm_depot.town_id,
+            db.sm_depot.town_name,
+            groupby=[db.sm_depot.town_id],
+            orderby=~db.sm_depot.town_id
+        )
+        data =  ','.join(f"{row.town_id} | {row.town_name}" for row in rows)
+        
+    if parameter == 'OperateBy':
+        rows = ['0 | PSR','1 | Distributor','2 | Operator']
+        rows = [row for row in rows if search.lower() in row.lower()]
+        data = ', '.join(f"{row}" for row in rows)
+        
+    if parameter == 'OperateFlag':
+        rows = ['0 | Open','1 | Block']
+        rows = [row for row in rows if search.lower() in row.lower()]
+        data = ', '.join(f"{row}" for row in rows)
+        
+    if parameter == 'Status':
+        query &= (
+            (db.sm_sup_depot.status.contains(search))
+        )
+        rows = db(query).select(
+            db.sm_depot.status,
+            groupby=db.sm_depot.status,
+            orderby=~db.sm_depot.status
+        )
+        data =  ','.join(f"{row.status}" for row in rows)
+    return data
+
 
 
 

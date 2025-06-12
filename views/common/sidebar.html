@@ -38,14 +38,16 @@
                                 href="{{=URL('item_batch', 'index')}}"><i class="fas fa-barcode"></i> <span>Item Batch</span></a>
                         </li>
                         {{pass}}
+                        {{if check_role('rm_depot_manage') == True or check_role('rm_depot_view') == True:}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="Branch" href="#"><i
+                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='branch' else ''}}" title="Branch" href="{{=URL('depot', 'branch')}}"><i
                                     class="fas fa-store"></i><span>Branch</span></a>
                         </li>
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="Distributor" href="#"><i
+                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='index' else ''}}"" title="Distributor" href="{{=URL('depot', 'index')}}"><i
                                     class="fas fa-truck"></i><span>Distributor</span></a>
                         </li>
+                        {{pass}}
                     </ul>
                 </div>
             </li>
