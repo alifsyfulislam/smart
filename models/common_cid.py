@@ -14,11 +14,11 @@ present_datetime = date_fixed.strftime('%Y-%m-%d %H:%M:%S')
 # =================== Server Time =========================
 
 # =================== Secondary ===========================
-db = DAL('mysql://smart:sdfiewrklwsfio28332ojewidnzZz@34.142.146.190/smart', decode_credentials=True)
+db = DAL('mysql://smart:sdfiewrdddklwsfio28332ojewidnzZz@34.142.146.190/smart', decode_credentials=True)
 # =================== Secondary ===========================
 
 # =================== Primary ===========================
-db2 = DAL('mysql://tcpl_secondary:sec9xyz123@35.197.145.58/tcpl', decode_credentials=True)
+db2 = DAL('mysql://tcpl_secondary:sec9dddxyz123@35.197.145.58/tcpl', decode_credentials=True)
 # =================== Primary ===========================
 
 
