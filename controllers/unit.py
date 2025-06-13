@@ -5,8 +5,8 @@ def dynamic_code_incr(input_str):
     return result_str
 
 def unit_validation(form):
-    cat_type_name = form.vars.cat_type_name
-    if cat_type_name == '' or cat_type_name == None:
+    cat_type_name = (form.vars.cat_type_name or '').strip()
+    if not cat_type_name:
         form.errors.cat_type_name='Unit name can not be empty'
         
     records=db(

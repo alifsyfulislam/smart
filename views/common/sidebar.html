@@ -9,7 +9,7 @@
             <!-- Home -->
             <!-- Basic Settings -->
             <li class="nav-item main-menu-item">
-                <a class="nav-link {{='active' if visited_controller in ['brand'] else ''}}" href="#"
+                <a class="nav-link" href="#"
                     data-bs-toggle="collapse" data-bs-target="#basicSubmenu" aria-expanded="false"
                     title="Basic Settings"><i class="fas fa-cogs"></i> <span>Basic
                         Settings</span></a>
@@ -40,12 +40,12 @@
                         {{pass}}
                         {{if check_role('rm_depot_manage') == True or check_role('rm_depot_view') == True:}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='branch' else ''}}" title="Branch" href="{{=URL('depot', 'branch')}}"><i
-                                    class="fas fa-store"></i><span>Branch</span></a>
+                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='branch' else ''}}" title="Branch" 
+                            href="{{=URL('depot', 'branch')}}"><i class="fas fa-store"></i><span>Branch</span></a>
                         </li>
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='index' else ''}}"" title="Distributor" href="{{=URL('depot', 'index')}}"><i
-                                    class="fas fa-truck"></i><span>Distributor</span></a>
+                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='index' else ''}}"" title="Distributor" 
+                            href="{{=URL('depot', 'index')}}"><i class="fas fa-truck"></i><span>Distributor</span></a>
                         </li>
                         {{pass}}
                     </ul>
@@ -58,22 +58,22 @@
                     aria-expanded="false" title="Field Force"><i class="fas fa-tools"></i> <span>Field Force</span></a>
                 <div class="collapse" id="basicSubmenu1" data-bs-parent="#sidebarMenu">
                     <ul class="nav flex-column ms-3">
+                        {{if check_role('rm_workingarea_manage') == True or check_role('rm_workingarea_view') == True:}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="National" href="#"><i class="fab fa-unity"></i>
-                                <span>National</span></a>
+                            <a class="nav-link {{='active' if visited_controller == 'top_level' and visited_function =='index' else ''}}" title="National" 
+                            href="{{=URL('top_level', 'index')}}"><i class="fab fa-unity"></i><span>National</span></a>
                         </li>
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="Field" href="#"><i class="fas fa-project-diagram"></i>
-                                <span>Field</span></a>
+                            <a class="nav-link {{='active' if visited_controller == 'level' and visited_function =='index' else ''}}" title="Field" 
+                            href="{{=URL('level', 'index')}}"><i class="fas fa-project-diagram"></i><span>Field</span></a>
                         </li>
+                        {{pass}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="Supervisor" href="#"><i
-                                    class="fas fa-user-cog"></i><span>Supervisor</span></a>
+                            <a class="nav-link" title="Supervisor" href="#"><i class="fas fa-user-cog"></i><span>Supervisor</span></a>
                         </li>
 
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="Supervisor Area" href="#"><i
-                                    class="fas fa-user-gear"></i><span>Supervisor Area</span></a>
+                            <a class="nav-link" title="Supervisor Area" href="#"><i class="fas fa-user-gear"></i><span>Supervisor Area</span></a>
                         </li>
 
                         <li class="nav-item sub-menu-item">
@@ -81,8 +81,7 @@
                         </li>
 
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="PSR Visit Plan" href="#"><i class="fas fa-calendar"></i><span>PSR
-                                    Visit Plan</span></a>
+                            <a class="nav-link" title="PSR Visit Plan" href="#"><i class="fas fa-calendar"></i><span>PSR Visit Plan</span></a>
                         </li>
                     </ul>
                 </div>

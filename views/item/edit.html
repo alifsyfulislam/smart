@@ -33,7 +33,7 @@
     {{pass}}
 
     {{if access_permission==True:}}
-    <form action="{{=URL(c='item',f='add')}}" method="post" class="d-flex flex-wrap gap-3 mt-4 p-2 border rounded" style="min-height: 200px;" enctype="multipart/form-data">
+    <form action="{{=URL(c='item',f='edit',vars=dict(rid=record.id, rmode='edit'))}}" method="post" class="d-flex flex-wrap gap-3 mt-4 p-2 border rounded" style="min-height: 200px;" enctype="multipart/form-data">
         <!-- Left Part: Input fields -->
         <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
             <!-- Full Width -->
@@ -186,10 +186,14 @@
 
 <script>
     function callDefaultImg(imgElement) {
+        imgElement.onerror = function () {
+            imgElement.onerror = null; // prevent infinite loop
+            imgElement.src = "{{=URL('static', 'images/dummy_brand.png')}}";
+        };
         let myurl = "{{=URL('download', args=record.image_path)}}";
         let fallbackUrl = 'https://smart.transcombd.com/welcome' + myurl;
         let cleanedUrl = fallbackUrl.replace("/smart_26", "");
-        console.log("Fallback URL:", cleanedUrl);
+        // console.log("Fallback URL:", cleanedUrl);
         imgElement.src = cleanedUrl;
     }
 

@@ -1,3 +1,36 @@
+def top_level_code_incr(input_str):
+    prefix, numeric_part = input_str[:-2], input_str[-2:]
+    incremented_numeric_part = str(int(numeric_part) + 1).zfill(len(numeric_part))
+    result_str = prefix + incremented_numeric_part
+    return result_str
+
+def top_level_validation(form):
+    level_name = (form.vars.level_name or '').strip()
+    level_id = ''
+    if not level_name:
+        form.errors.level_name='National name can not be empty'
+        
+    record=db(
+        (db.sm_top_level.cid==session.cid) & 
+        (db.sm_top_level.depth=='0') &
+        (db.sm_top_level.level_id !='ITHOS')
+    ).select(
+        db.sm_top_level.ALL,
+        orderby=~db.sm_top_level.id,
+    ).first()
+    
+    if record:
+        level_id = top_level_code_incr(record.level_id)
+        form.vars.cid = session.cid
+        form.vars.level_id = level_id.upper()
+        form.vars.level_name = level_name.upper()
+        form.vars.level0 = level_id.upper()
+        form.vars.level0_name = level_name.upper()
+        form.vars.parent_level_id = '0'
+        form.vars.parent_level_name = ''
+        form.vars.depth = '0'
+        form.vars.is_leaf = '0'
+        
 def index():
     
     div_topbar = True
@@ -13,8 +46,8 @@ def index():
         redirect(URL(c='auth', f='login'))
         
     # =============================== Middleware
-    task_id='rm_item_manage'
-    task_id_view='rm_item_view'
+    task_id='rm_workingarea_manage'
+    task_id_view='rm_workingarea_view'
     access_permission=check_role(task_id)
     access_permission_view=check_role(task_id_view)
     if (access_permission==False) and (access_permission_view==False):
@@ -22,7 +55,7 @@ def index():
         redirect (URL('home','index'))
     # =============================== Middleware
     
-    response.title='Item Batch'
+    response.title='National'
     search_type = request.vars.search_type if request.vars.search_type else session.search_type
     search_value = request.vars.search_value if request.vars.search_value else session.search_value
     btn_filter=request.vars.btn_filter if request.vars.btn_filter else session.btn_filter
@@ -50,7 +83,7 @@ def index():
         session.search_type=search_type
         session.search_value=search_value
         reqPage=0
-        redirect(URL(c='item_batch', f='download_excel',vars=dict(
+        redirect(URL(c='top_level', f='download_excel',vars=dict(
             btn_download=btn_download,
             search_type=search_type,
             search_value=search_value
@@ -73,66 +106,89 @@ def index():
     else:
         page=0
         
-    items_per_page = int(session.items_per_page)
-    limitby=((page*items_per_page),(page+1)*items_per_page)
-    
-    qset=db()
-    qset = qset(
-        (db.sm_item_batch.cid==session.cid)
+    # db.sm_top_level.level_id.readable  = True
+    form =SQLFORM(db.sm_top_level,
+        fields=['level_name'],
+        submit_button='Save'
     )
     
-    if (session.btn_filter and session.search_type=='ItemID'):
-        searchParams=str(session.search_value).strip().split('|')      
-        qset=qset(db.sm_item_batch.item_id == searchParams[0].strip().upper())
+    if form.accepts(request.vars,session,onvalidation=top_level_validation):
+        session.flash = 'Data inserted successfully!'
+        
+    # items_per_page = int(session.items_per_page)
+    # limitby=((page*items_per_page),(page+1)*items_per_page)
     
-    # return db._lastsql
-    records=qset.select(db.sm_item_batch.ALL,orderby=[~db.sm_item_batch.id,db.sm_item_batch.item_id,db.sm_item_batch.name],limitby=limitby)
-    totalCount=qset.count() 
+    qset = (db.sm_top_level.cid == session.cid) & (db.sm_top_level.depth == '0')
+    
+    if (session.btn_filter and session.search_type=='LevelID'):
+        searchParams=str(session.search_value).strip().split('|')      
+        qset &= (db.sm_top_level.level0 == searchParams[0].strip().upper())
+    
+    records=db(qset).select(db.sm_top_level.ALL,orderby=[db.sm_top_level.level_id,db.sm_top_level.level_name])
+    # return str(db._lastsql)
+    totalCount=db(qset).count() 
     return locals()
 
 def download_excel():
-    response.title = 'Item Batch'
+    response.title = 'National'
     wb = Workbook()
     ws = wb.active
     ws.title = response.title
 
     # Get filters
+    depth=str(request.vars.depth)
     btn_download=str(request.vars.btn_download)
     search_type=str(request.vars.search_type)
     search_value=str(request.vars.search_value)
 
     # Query
-    qset = db()
-    qset = qset(
-        (db.sm_item_batch.cid == session.cid)
-    )
+    qset = (db.sm_top_level.cid == session.cid)
+    
+    if btn_download and search_type == 'LevelID':
+        searchValue = str(search_value).split('|')[0].strip()
+        qset &= (db.sm_top_level.level0 == searchValue.upper())
         
-    if (btn_download and search_type=='ItemID'):
-        searchParams=str(search_value).strip().split('|')      
-        qset=qset(db.sm_item_batch.item_id == searchParams[0].strip().upper())
-        
-    records = qset.select(
-        db.sm_item_batch.ALL,
-        orderby=[db.sm_item_batch.item_id]
+    records = db(qset).select(
+        db.sm_top_level.level_id,
+        db.sm_top_level.level_name,
+        db.sm_top_level.level0,
+        db.sm_top_level.level0_name,
+        db.sm_top_level.level1,
+        db.sm_top_level.level1_name,
+        db.sm_top_level.level2,
+        db.sm_top_level.level2_name,
+        db.sm_top_level.level3,
+        db.sm_top_level.level3_name,
+        db.sm_top_level.depth,
+        db.sm_top_level.updated_on,
+        db.sm_top_level.updated_by,
+        orderby=[db.sm_top_level.level0,db.sm_top_level.level1,db.sm_top_level.level2,db.sm_top_level.level3]
     )
     
     # return session.btn_filter
-    # return response.json(records)
-    
+    # return str(db._lastsql)
     alias_map = {
-        'item_id': 'Item Code',
-        'name': 'Item Name',
-        'batch_id': 'Batch',
-        'expiary_date': 'Expiary',
+        'level0': 'National Code',
+        'level0_name': 'National Name',
+        'level1': 'Region Code',
+        'level1_name': 'Region Name',
+        'level2': 'Area Code',
+        'level2_name': 'Area Name',
+        'level3': 'Territory Code',
+        'level3_name': 'Territory Name',
         'updated_by': 'Updated By',
         'updated_on': 'Updated On'
     }
     
     ws.append([
-        alias_map['item_id'], 
-        alias_map['name'], 
-        alias_map['batch_id'], 
-        alias_map['expiary_date'], 
+        alias_map['level0'], 
+        alias_map['level0_name'],
+        alias_map['level1'], 
+        alias_map['level1_name'],
+        alias_map['level2'], 
+        alias_map['level2_name'],
+        alias_map['level3'], 
+        alias_map['level3_name'],
         alias_map['updated_by'],
         alias_map['updated_on'] 
     ])
@@ -140,7 +196,6 @@ def download_excel():
     for row in records:
         
         updated_on_str = row.updated_on.strftime('%Y-%m-%d %H:%M:%S') if row.updated_on else ''
-        expiary_date_str = row.expiary_date.strftime('%Y-%m-%d') if row.expiary_date else ''
         # if depth == "1":
         #     row.level1 = row.level_id
         #     row.level1_name = row.level_name
@@ -149,17 +204,21 @@ def download_excel():
         #     row.level2_name = row.level_name
             
         ws.append([
-            row.item_id,
-            row.name,
-            row.batch_id,
-            expiary_date_str,
+            row.level0, 
+            row.level0_name,
+            row.level1, 
+            row.level1_name,
+            row.level2, 
+            row.level2_name,
+            row.level3, 
+            row.level3_name,
             row.updated_by,
             updated_on_str
         ])
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
-    filename = 'item_batch.xlsx'
+    filename = 'national.xlsx'
     response.headers['Content-Type'] = contenttype('.xlsx')
     response.headers['Content-Disposition'] = f'attachment; filename={filename}'
     
@@ -168,3 +227,4 @@ def download_excel():
     session.search_value=''
     
     return output.read()
+

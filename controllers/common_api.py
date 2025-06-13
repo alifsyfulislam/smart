@@ -302,6 +302,25 @@ def get_depot():
         data =  ','.join(f"{row.status}" for row in rows)
     return data
 
+def get_national():
+    cid = session.cid
+    search = request.vars.search or ''
+    
+    if cid == '' or cid == None:
+        return
+    query = (db.sm_top_level.cid == cid) & (db.sm_top_level.depth == '0')
+    if search:
+        query &= (
+            (db.sm_top_level.level_name.contains(search)) |
+            (db.sm_top_level.level_id.contains(search))
+        )
+    rows = db(query).select(
+        db.sm_top_level.level_id,
+        db.sm_top_level.level_name,
+        orderby=db.sm_top_level.level_id
+    )
+    return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
+
 
 
 

@@ -573,6 +573,45 @@ def edit():
     
     if btn_save:
         vars = request.vars
-        return response.json(vars)
+
+        item_id = vars.item_id.strip()
+        image_file = vars.image_path
+        image_filename = None
+
+        if image_file is not None and hasattr(image_file, 'file') and image_file.filename:
+            image_filename = db.sm_item.image_path.store(image_file.file, image_file.filename)
+        
+        update_fields = dict(
+            name_bn       = vars.name_bn.strip(),
+            item_carton   = int(vars.item_carton),
+            name          = vars.name.strip(),
+            flavor_id     = vars.flavor_id.strip(),
+            unit_type     = vars.unit_type.strip(),
+            price         = float(vars.price or 0),
+            item_chain    = int(vars.item_chain or 0),
+            vat_amt       = float(vars.vat_amt or 0),
+            status        = vars.status.strip(),
+            item_category = vars.item_category.strip(),
+            invoice_price = float(vars.invoice_price or 0),
+            des           = vars.des.strip(),
+            pack_size     = vars.pack_size.strip(),
+            mrp           = float(vars.mrp or 0),
+            old_item_id   = '' if vars.old_item_id == 'None' else vars.old_item_id.strip(),
+        )
+        
+        if image_filename:
+            update_fields['image_path'] = image_filename
+            
+        update_flag = db(
+            (db.sm_item.cid == session.cid) &
+            (db.sm_item.item_id == item_id)
+        ).update(**update_fields)
+        
+        if update_flag:
+            session.message = 'Data updated successfully!'
+            redirect(URL('item', 'index'))
+        else:
+            session.flash = 'Update failed!'
+            redirect(request.env.http_referer)
     return locals()
 
