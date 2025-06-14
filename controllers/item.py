@@ -338,10 +338,12 @@ def bulk_item():
                     'item_category': str(coloum_list[0]).strip(),
                     'item_id': str(coloum_list[1]).strip(),
                     'name': str(coloum_list[2]).strip(),
+                    'name_bn': '',
                     'unit_type': str(coloum_list[3]).strip(),
                     'pack_size': str(coloum_list[4]).strip(),
                     'weight': float(coloum_list[5] or 0),
                     'item_carton': int(coloum_list[6] or 0),
+                    'ctn_pcs_ratio': int(coloum_list[6] or 0),
                     'item_chain': int(coloum_list[7] or 0),
                     'price': float(coloum_list[8] or 0),
                     'vat_amt': 0,
@@ -461,6 +463,32 @@ def bulk_item():
                         count_inserted += 1
     return locals()
 
+def validate_item_form(vars):
+    errors = []
+    if not vars.item_category:
+        errors.append('Category is required.')
+    if not vars.item_id:
+        errors.append('Code is required.')
+    if not vars.name:
+        errors.append('Name is required.')
+    if not vars.unit_type:
+        errors.append('Unit is required.')
+    if not vars.pack_size:
+        errors.append('Pack size is required.')
+    if not vars.status:
+        errors.append('Status is required.')
+    if not (vars.weight and vars.item_carton and vars.item_chain and vars.price):
+        errors.append('Weight or carton or chain or price is required.')
+        
+    # image = vars.image_path
+    # if not hasattr(image, 'filename') or not image.filename:
+    #     errors.append('Logo is required.')
+    # else:
+    #     ext = image.filename.lower()
+    #     if not ext.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+    #         errors.append('Only JPG, JPEG, PNG, GIF formats are allowed.')
+    return errors
+
 def add():
     div_topbar = True
     div_sidebar = True
@@ -510,7 +538,105 @@ def add():
     
     if btn_save:
         vars = request.vars
-        return response.json(vars)
+        cid = session.cid
+        errors = validate_item_form(vars)
+        # return response.json(vars)
+        if not errors:
+            image_file = vars.image_path
+            image_filename = None
+
+            if image_file is not None and hasattr(image_file, 'file') and image_file.filename:
+                image_filename = db.sm_item.image_path.store(image_file.file, image_file.filename)
+                
+            flavorRecords = next((f for f in allowed_flavors if f.flavor_id == vars.flavor_id.strip()), '')
+            
+            if flavorRecords:
+                company_id      = flavorRecords.company_id
+                company_name    = flavorRecords.company_name
+                brand_id        = flavorRecords.brand_id
+                brand_name      = flavorRecords.brand_name
+                type_id         = flavorRecords.type_id
+                type_name       = flavorRecords.type_name
+                flavor_name     = flavorRecords.flavor_name
+            
+            new_item = dict(
+                cid             = cid,
+                item_id         = vars.item_id.strip(),
+                name_bn         = vars.name_bn.strip(),
+                item_carton     = int(vars.item_carton or 0),
+                ctn_pcs_ratio   = int(vars.item_carton or 0),
+                name            = vars.name.strip(),
+                flavor_id       = vars.flavor_id.strip(),
+                unit_type       = vars.unit_type.strip(),
+                price           = float(vars.price or 0),
+                total_amt       = float(vars.price or 0),
+                item_chain      = int(vars.item_chain or 0),
+                vat_amt         = float(vars.vat_amt or 0),
+                status          = vars.status.strip(),
+                item_category   = vars.item_category.strip(),
+                invoice_price   = float(vars.invoice_price or 0),
+                des             = vars.des.strip(),
+                pack_size       = vars.pack_size.strip(),
+                mrp             = float(vars.mrp or 0),
+                weight          = float(vars.weight or 0),
+                old_item_id     = '',
+                company_id      = company_id,
+                company_name    = company_name,
+                brand_id        = brand_id,
+                brand_name      = brand_name,
+                category_id     = brand_id,
+                category_name   = brand_name,
+                type_id         = type_id,
+                type_name       = type_name,
+                flavor_name     = flavor_name
+            )
+            
+            new_batch_item = dict(
+                cid             = cid,
+                item_id         = vars.item_id.strip(),
+                name            = vars.name.strip(),
+                batch_id        = vars.item_id.strip().replace("-", "")+'21001231',
+                expiary_date    = '2100-12-31'
+            )
+
+            if image_filename:
+                new_item['image_path'] = image_filename
+
+            inserted_id = db.sm_item.insert(**new_item)
+            inserted_batch_id = db.sm_item_batch.insert(**new_batch_item)
+            
+            item_depot_stock_info = []
+            depotStoreRecords = db(db.sm_depot_store.cid == cid).select(db.sm_depot_store.ALL, orderby = [db.sm_depot_store.depot_id,db.sm_depot_store.store_id])
+                        
+            if depotStoreRecords:
+                for dsItem in depotStoreRecords:
+                    item_depot_stock_info.append({
+                        'cid' : dsItem['cid'],
+                        'depot_id' : dsItem['depot_id'],
+                        'store_id' : dsItem['store_id'],
+                        'store_name' : dsItem['store_name'],
+                        'item_id' : vars.item_id.strip(),
+                        'batch_id' : vars.name.strip().replace("-", "")+'21001231',
+                        'expiary_date' : '2100-12-31',
+                        'quantity' : 0,
+                        'block_qty' : 0,
+                    })
+                
+                CHUNK_SIZE = 500
+                for i in range(0, len(item_depot_stock_info), CHUNK_SIZE):
+                    chunk = item_depot_stock_info[i:i+CHUNK_SIZE]
+                    db.sm_depot_stock_balance.bulk_insert(chunk)
+                    db.commit()
+
+            if inserted_id and inserted_batch_id:
+                session.message = 'Item added successfully!'
+                redirect(URL('item', 'index'))
+            else:
+                session.flash = 'Failed to add item!'
+                redirect(request.env.http_referer)
+        else:
+            session.flash = errors
+            redirect(request.env.http_referer)
     return locals()
 
 def edit():
@@ -573,45 +699,75 @@ def edit():
     
     if btn_save:
         vars = request.vars
+        cid = session.cid
+        errors = validate_item_form(vars)
 
-        item_id = vars.item_id.strip()
-        image_file = vars.image_path
-        image_filename = None
+        if not errors:
+            item_id = vars.item_id.strip()
+            image_file = vars.image_path
+            image_filename = None
 
-        if image_file is not None and hasattr(image_file, 'file') and image_file.filename:
-            image_filename = db.sm_item.image_path.store(image_file.file, image_file.filename)
-        
-        update_fields = dict(
-            name_bn       = vars.name_bn.strip(),
-            item_carton   = int(vars.item_carton),
-            name          = vars.name.strip(),
-            flavor_id     = vars.flavor_id.strip(),
-            unit_type     = vars.unit_type.strip(),
-            price         = float(vars.price or 0),
-            item_chain    = int(vars.item_chain or 0),
-            vat_amt       = float(vars.vat_amt or 0),
-            status        = vars.status.strip(),
-            item_category = vars.item_category.strip(),
-            invoice_price = float(vars.invoice_price or 0),
-            des           = vars.des.strip(),
-            pack_size     = vars.pack_size.strip(),
-            mrp           = float(vars.mrp or 0),
-            old_item_id   = '' if vars.old_item_id == 'None' else vars.old_item_id.strip(),
-        )
-        
-        if image_filename:
-            update_fields['image_path'] = image_filename
+            if image_file is not None and hasattr(image_file, 'file') and image_file.filename:
+                image_filename = db.sm_item.image_path.store(image_file.file, image_file.filename)
+                
+            flavorRecords = next((f for f in allowed_flavors if f.flavor_id == vars.flavor_id.strip()), '')
             
-        update_flag = db(
-            (db.sm_item.cid == session.cid) &
-            (db.sm_item.item_id == item_id)
-        ).update(**update_fields)
-        
-        if update_flag:
-            session.message = 'Data updated successfully!'
-            redirect(URL('item', 'index'))
+            if flavorRecords:
+                company_id      = flavorRecords.company_id
+                company_name    = flavorRecords.company_name
+                brand_id        = flavorRecords.brand_id
+                brand_name      = flavorRecords.brand_name
+                type_id         = flavorRecords.type_id
+                type_name       = flavorRecords.type_name
+                flavor_name     = flavorRecords.flavor_name
+            
+            update_fields = dict(
+                cid             = cid,
+                name_bn         = vars.name_bn.strip(),
+                item_carton     = int(vars.item_carton or 0),
+                ctn_pcs_ratio   = int(vars.item_carton or 0),
+                name            = vars.name.strip(),
+                flavor_id       = vars.flavor_id.strip(),
+                unit_type       = vars.unit_type.strip(),
+                price           = float(vars.price or 0),
+                total_amt       = float(vars.price or 0),
+                item_chain      = int(vars.item_chain or 0),
+                vat_amt         = float(vars.vat_amt or 0),
+                status          = vars.status.strip(),
+                item_category   = vars.item_category.strip(),
+                invoice_price   = float(vars.invoice_price or 0),
+                des             = vars.des.strip(),
+                pack_size       = vars.pack_size.strip(),
+                mrp             = float(vars.mrp or 0),
+                weight          = float(vars.weight or 0),
+                old_item_id     = '',
+                company_id      = company_id,
+                company_name    = company_name,
+                brand_id        = brand_id,
+                brand_name      = brand_name,
+                category_id     = brand_id,
+                category_name   = brand_name,
+                type_id         = type_id,
+                type_name       = type_name,
+                flavor_name     = flavor_name
+            )
+            
+            if image_filename:
+                update_fields['image_path'] = image_filename
+                
+            update_flag = db(
+                (db.sm_item.cid == session.cid) &
+                (db.sm_item.item_id == item_id)
+            ).update(**update_fields)
+            
+            if update_flag:
+                session.message = 'Data updated successfully!'
+                redirect(URL('item', 'index'))
+            else:
+                session.flash = 'Update failed!'
+                redirect(request.env.http_referer)
         else:
-            session.flash = 'Update failed!'
+            session.flash = errors
             redirect(request.env.http_referer)
     return locals()
 

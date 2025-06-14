@@ -22,17 +22,15 @@ def dynamic_code_incr(input_str):
 def validate_brand_form(vars):
     errors = []
     if not vars.level_name:
-        errors.append('Brand name is required.')
-    if 'image_path' not in vars or vars.image_path is None:
-        errors.append('Brand logo is required.')
+        errors.append('Name is required.')
+        
+    image = vars.image_path
+    if not hasattr(image, 'filename') or not image.filename:
+        errors.append('Logo is required.')
     else:
-        image = vars.image_path
-        if not hasattr(image, 'filename') or not image.filename:
-            errors.append('Brand logo is required.')
-        else:
-            ext = image.filename.lower()
-            if not ext.endswith(('.jpg', '.jpeg', '.png', '.gif')):
-                errors.append('Only JPG, JPEG, PNG, GIF formats are allowed.')
+        ext = image.filename.lower()
+        if not ext.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+            errors.append('Only JPG, JPEG, PNG, GIF formats are allowed.')
     return errors
 
 

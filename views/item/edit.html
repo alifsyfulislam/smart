@@ -37,7 +37,7 @@
         <!-- Left Part: Input fields -->
         <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
             <!-- Full Width -->
-            <div class="mb-2 mt-3 mx-3">
+            <div class="mb-2 mx-3">
                 <img id="imagePreview"
                     src="{{=URL('download', args=record.image_path)}}"
                     alt="Item Logo"
@@ -90,16 +90,16 @@
             </div>
 
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
-                <label for="invoicePrice" class="form-label">Dist Price</label>
+                <label for="invoicePrice" class="form-label">Inv Price</label>
                 <input type="number" class="form-control" id="invoicePrice" name="invoice_price" placeholder="Enter Inv Price"
                 value="{{=record.invoice_price}}"
                 >
             </div>
 
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" class="form-control" id="price" name="price" placeholder="Enter Price"
-                value="{{=record.price}}">
+                <label for="mrp" class="form-label">MRP</label>
+                <input type="number" class="form-control" id="mrp" name="mrp" placeholder="Enter MRP"
+                value="{{=record.mrp}}">
             </div>
         </div>
         <!-- Right Part: Image -->
@@ -107,19 +107,19 @@
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
                 <label for="itemCode" class="form-label">Item Code</label>
                 <input type="text" class="form-control" id="itemCode" name="item_id" placeholder="Enter Item Code"
-                value="{{=record.item_id}}">
+                value="{{=record.item_id}}" readonly>
             </div>
 
-            <div class="d-flex flex-column align-items-start justify-content-center mb-2">
+            <!-- <div class="d-flex flex-column align-items-start justify-content-center mb-2">
                 <label for="itemCode" class="form-label">Item Code(Old)</label>
                 <input type="text" class="form-control" id="itemCode" name="old_item_id" placeholder="Enter Old Item Code"
-                value="{{=record.old_item_id}}">
-            </div>
+                value="{{#=record.old_item_id}}">
+            </div> -->
 
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
                 <label for="itemName" class="form-label">Item Name</label>
                 <input type="text" class="form-control" id="itemName" name="name" placeholder="Enter Item Name"
-                value="{{=record.name}}">
+                value="{{=record.name}}" readonly>
             </div>
 
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
@@ -155,22 +155,28 @@
             </div>
 
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
+                <label for="weight" class="form-label">Weight</label>
+                <input type="number" class="form-control" id="weight" name="weight" placeholder="Enter weight"
+                value="{{=record.weight}}">
+            </div>
+
+            <div class="d-flex flex-column align-items-start justify-content-center mb-2">
                 <label for="itemChain" class="form-label">Item Chain</label>
                 <input type="number" class="form-control" id="itemCarton" name="item_chain" placeholder="Enter Item Chain"
                 value="{{=record.item_chain}}">
             </div>
 
             <div class="d-flex flex-column align-items-start justify-content-center mb-2">
-                <label for="mrp" class="form-label">MRP</label>
-                <input type="number" class="form-control" id="mrp" name="mrp" placeholder="Enter MRP"
-                value="{{=record.mrp}}">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" class="form-control" id="price" name="price" placeholder="Enter Price"
+                value="{{=record.price}}">
             </div>
 
-            <div class="d-flex flex-column align-items-start justify-content-center mb-2">
+            <!-- <div class="d-flex flex-column align-items-start justify-content-center mb-2">
                 <label for="vat" class="form-label">Vat</label>
                 <input type="number" class="form-control" id="vat" name="vat_amt" placeholder="Enter Vat"
-                value="{{=record.vat_amt}}">
-            </div>
+                value="{{#=record.vat_amt}}">
+            </div> -->
         </div>
         
         <div class="w-100 mb-2">
@@ -178,6 +184,10 @@
                 <i class="fas fa-save"></i> Update
             </button>
         </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         <!-- Full Width -->
     </form>
     {{pass}}
