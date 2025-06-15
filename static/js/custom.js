@@ -94,5 +94,6 @@ $(document).ready(function () {
                 $icon.removeClass('fa-arrow-alt-circle-up').addClass('fa-arrow-alt-circle-down');
             });
         }
+        // $('#add_form_sidebar').submit()
     });
 });

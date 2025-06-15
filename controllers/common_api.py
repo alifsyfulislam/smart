@@ -290,6 +290,11 @@ def get_depot():
         rows = [row for row in rows if search.lower() in row.lower()]
         data = ', '.join(f"{row}" for row in rows)
         
+    if parameter == 'StoreType':
+        rows = ['SALES','OTHERS']
+        rows = [row for row in rows if search.lower() in row.lower()]
+        data = ', '.join(f"{row}" for row in rows)
+        
     if parameter == 'Status':
         query &= (
             (db.sm_sup_depot.status.contains(search))

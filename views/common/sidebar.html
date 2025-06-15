@@ -47,6 +47,10 @@
                             <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='index' else ''}}"" title="Distributor" 
                             href="{{=URL('depot', 'index')}}"><i class="fas fa-truck"></i><span>Distributor</span></a>
                         </li>
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link {{='active' if visited_controller == 'depot' and visited_function =='store' else ''}}"" title="Distributor Store" 
+                            href="{{=URL('depot', 'store')}}"><i class="fa fa-window-restore"></i><span>Distributor Store</span></a>
+                        </li>
                         {{pass}}
                     </ul>
                 </div>

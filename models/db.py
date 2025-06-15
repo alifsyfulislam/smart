@@ -328,7 +328,7 @@ db.define_table("sm_depot_store",
     Field("depot_id", "string", requires=IS_NOT_EMPTY()),
     Field("store_id", "string", requires=IS_NOT_EMPTY()),
     Field("store_name", "string", requires=IS_NOT_EMPTY()),
-    Field("store_type", "string", requires=IS_IN_SET(("SALES", "OTHERS")), default="SALES"),  # SALES,OTHERS
+    Field("store_type", "string", requires=IS_IN_SET(("SALES", "OTHERS"))),  # SALES,OTHERS
     signature,
     migrate=False,
 )

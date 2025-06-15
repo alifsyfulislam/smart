@@ -219,7 +219,7 @@ div.dataTables_wrapper div.dataTables_info {
     width: 200px;
 }
 
-#autocomplete-list{
+#autocomplete-list,#autocomplete-list-2{
     font-size: 13px;
     width: 300px;
     max-height: 300px;
