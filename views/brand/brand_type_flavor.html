@@ -22,6 +22,16 @@
                 <li class="breadcrumb-item"><a class="" href="{{=URL('brand','index')}}">Brand</a></li>
                 <li class="breadcrumb-item"><a class="" href="{{=URL('brand','brand_type')}}">Type</a></li>
                 <li class="breadcrumb-item">Flavor</a></li>
+                <li id="toggleInputForm" class="ms-2" style="cursor: pointer;">
+                    {{if session.btn_add_form != 'false':}}
+                    <i class="fa fa-arrow-alt-circle-up"></i>
+                    {{else:}}
+                    <i class="fa fa-arrow-alt-circle-down"></i>
+                    {{pass}}
+                </li>
+                <form id="add_form_index" name="add_form_index" method="post" action="{{=URL(c='home',f='form_collapse')}}">
+                    <input type="hidden" id="btn_add_form" name="btn_add_form" value="{{=session.btn_add_form}}"/>
+                </form>
             </ol>
         </nav>
         <div class="d-flex gap-2 my-1">
@@ -35,7 +45,7 @@
     <!-- Your Input -->
     {{if access_permission==True:}}
         {{=form.custom.begin}}
-        <div class="d-flex flex-wrap gap-3 mt-2 p-2 border rounded"">
+        <div class="d-flex flex-wrap gap-3 mt-2 p-2 border rounded {{='d-block' if session.btn_add_form != 'false' else 'd-none'}}" id="inputForm">
             <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
                 <div class="mb-1">
                     <label for="brandName" class="form-label">Flavor Name</label>
