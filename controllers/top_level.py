@@ -110,6 +110,7 @@ def index():
     btn_filter=request.vars.btn_filter if request.vars.btn_filter else session.btn_filter
     btn_all=request.vars.btn_all if request.vars.btn_all else session.btn_all
     btn_download=request.vars.btn_download if request.vars.btn_download else session.btn_download
+    national_id=request.vars.national_id if request.vars.national_id else ''
     
     
     session.search_type=search_type
@@ -169,6 +170,9 @@ def index():
     
     qset = (db.sm_top_level.cid == session.cid) & (db.sm_top_level.depth == '0')
     
+    if (national_id):
+        qset &= (db.sm_top_level.level0 == national_id)
+    
     if (session.btn_filter and session.search_type=='NationalID'):
         searchParams=str(session.search_value).strip().split('|')      
         qset &= (db.sm_top_level.level0 == searchParams[0].strip().upper())
@@ -209,6 +213,7 @@ def area():
     btn_all=request.vars.btn_all if request.vars.btn_all else session.btn_all
     btn_download=request.vars.btn_download if request.vars.btn_download else session.btn_download
     national_id=request.vars.national_id if request.vars.national_id else ''
+    area_id=request.vars.area_id if request.vars.area_id else ''
     
     
     session.search_type=search_type
@@ -271,6 +276,9 @@ def area():
     
     if (national_id):
         qset &= (db.sm_top_level.level0 == national_id)
+        
+    if (area_id):
+        qset &= (db.sm_top_level.level1 == area_id)
     
     if (session.btn_filter and session.search_type=='AreaID'):
         searchParams=str(session.search_value).strip().split('|')      
@@ -418,7 +426,9 @@ def territory():
     btn_download=request.vars.btn_download if request.vars.btn_download else session.btn_download
     national_id=request.vars.national_id if request.vars.national_id else ''
     area_id=request.vars.area_id if request.vars.area_id else ''
-    zone_id=request.vars.area_id if request.vars.zone_id else ''
+    zone_id=request.vars.zone_id if request.vars.zone_id else ''
+    
+    # return str(national_id)+str(area_id)+str(zone_id)
     
     
     session.search_type=search_type
@@ -483,12 +493,16 @@ def territory():
         
     if (area_id):
         qset &= (db.sm_top_level.level1 == area_id)
+        
+    if (zone_id):
+        qset &= (db.sm_top_level.level2 == zone_id)
     
     if (session.btn_filter and session.search_type=='TerritoryID'):
         searchParams=str(session.search_value).strip().split('|')      
         qset &= (db.sm_top_level.level3 == searchParams[0].strip().upper())
     
     records=db(qset).select(db.sm_top_level.ALL,orderby=[db.sm_top_level.level_id,db.sm_top_level.level_name])
+    # return str(db._lastsql)
     totalCount=db(qset).count() 
     return locals()
 

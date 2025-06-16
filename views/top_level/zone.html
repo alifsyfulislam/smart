@@ -7,8 +7,8 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><i class="fa fa-folder-open"></i></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL('top_level','index')}}">National</a></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL('top_level','area')}}">Area</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='index',vars=dict(national_id=national_id))}}">National</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='area',vars=dict(national_id=national_id,area_id=area_id))}}">Area</a></li>
                 <li class="breadcrumb-item">{{=response.title}}</a></li>
                 <li id="toggleInputForm" class="ms-2" style="cursor: pointer;">
                     {{if session.btn_add_form != 'false':}}

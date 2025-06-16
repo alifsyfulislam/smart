@@ -20,7 +20,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><i class="fa fa-folder-open"></i></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL('brand','index',vars=dict(company_id=company_id,company_name=company_name))}}">Brand</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL('brand','index',vars=dict(company_id=company_id,company_name=company_name,brand_id=brand_id, brand_name=brand_name))}}">Brand</a></li>
                 <li class="breadcrumb-item">Type</a></li>
                 <li id="toggleInputForm" class="ms-2" style="cursor: pointer;">
                     {{if session.btn_add_form != 'false':}}

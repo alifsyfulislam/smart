@@ -141,6 +141,11 @@ def index():
     btn_all=request.vars.btn_all if request.vars.btn_all else session.btn_all
     btn_download=request.vars.btn_download if request.vars.btn_download else session.btn_download
     
+    company_id=request.vars.company_id
+    company_name=request.vars.company_name
+    brand_id=request.vars.brand_id
+    brand_name=request.vars.brand_name
+    
     session.search_type=search_type
     session.search_value=search_value if search_value is not None else ''
     session.btn_filter=btn_filter
@@ -193,6 +198,9 @@ def index():
         (db.sm_product_hierarchy.depth=='1')&
         (db.sm_product_hierarchy.is_leaf=='0')
     )
+    
+    if brand_id:
+        qset = qset(db.sm_product_hierarchy.level1 == brand_id)
     
     if (session.btn_filter and session.search_type=='BrandID'):
         searchValue=str(session.search_value).split('|')[0]        
