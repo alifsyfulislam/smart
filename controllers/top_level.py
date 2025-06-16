@@ -74,6 +74,12 @@ def area_validation(form):
     else:
         form.errors.level_name='Demo Field'
         
+def zone_validation(form):
+    pass
+
+def territory_validation(form):
+    pass
+        
 def index():
     
     div_topbar = True
@@ -470,7 +476,7 @@ def territory():
     # items_per_page = int(session.items_per_page)
     # limitby=((page*items_per_page),(page+1)*items_per_page)
     
-    qset = (db.sm_top_level.cid == session.cid) & (db.sm_top_level.depth == '2')
+    qset = (db.sm_top_level.cid == session.cid) & (db.sm_top_level.depth == '3')
     
     if (national_id):
         qset &= (db.sm_top_level.level0 == national_id)
