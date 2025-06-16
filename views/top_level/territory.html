@@ -50,7 +50,7 @@
     
     <!-- Part 2 -->
     <!-- Your Filter -->
-    <form id="search_form" name="search_form" method="post" action="{{=URL(c='top_level',f='zone',vars=dict(national_id=national_id,area_id=area_id))}}">
+    <form id="search_form" name="search_form" method="post" action="{{=URL(c='top_level',f='territory',vars=dict(national_id=national_id,area_id=area_id,zone_id=zone_id))}}">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start flex-wrap bg-light p-2" style="font-size: 14px;">
             <div class="d-flex flex-column flex-md-row gap-2 align-items-left my-1">
                 <select id="searchParam" class="form-select form-select-sm select2 search-select" name="search_type">

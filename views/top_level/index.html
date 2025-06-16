@@ -7,7 +7,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><i class="fa fa-folder-open"></i></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='index',vars=dict(national_id=''))}}">National</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='index',vars=dict(national_id=national_id))}}">National</a></li>
                 <li id="toggleInputForm" class="ms-2" style="cursor: pointer;">
                     {{if session.btn_add_form != 'false':}}
                     <i class="fa fa-arrow-alt-circle-up"></i>
@@ -47,7 +47,7 @@
     
     <!-- Part 2 -->
     <!-- Your Filter -->
-    <form id="search_form" name="search_form" method="post" action="{{=URL(c='top_level',f='index')}}">
+    <form id="search_form" name="search_form" method="post" action="{{=URL(c='top_level',f='index',vars=dict(national_id=national_id))}}">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start flex-wrap bg-light p-2" style="font-size: 14px;">
             <div class="d-flex flex-column flex-md-row gap-2 align-items-left my-1">
                 <select id="searchParam" class="form-select form-select-sm select2 search-select" name="search_type">
