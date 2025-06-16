@@ -4,7 +4,12 @@
     <!-- Part 1 -->
     <!-- Your Heading -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start bg-light p-2 flex-wrap">
-        <h5 class="my-1 table-title">Brand</h5>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><i class="fa fa-folder-open"></i></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL('brand','index',vars=dict(company_id='',company_name=''))}}">Brand</a></li>
+            </ol>
+        </nav>
         <div class="d-flex flex-wrap gap-2 my-1 {{='d-block' if access_permission == True else 'd-none'}}">
             <a href="{{=URL(c='brand',f='add')}}" class="btn smart-btn btn-outline-secondary btn-sm">
                 <i class="fa fa-add"></i> Add
@@ -208,21 +213,10 @@
             {{session.message = None}}
         });
 
-        /*$('#searchInput').on('keyup', function () {
-            let searchValue = $(this).val();
-            if (searchValue.length < 2) return;
-            $.ajax({
-                url: base_url + 'common_api/get_brand',
-                type: 'POST',
-                data: { search: searchValue },
-                success: function (data) {
-                    console.log(data.results);
-                },
-                error: function (xhr, status, error) {
-                    console.error('Error:', xhr.responseText);
-                }
-            });
-        });*/
+        $('#searchParam').on('change', function () {
+            $('#searchInput').val('')
+        })
+
         $('#searchInput').on('keyup', function () {
             let searchValue = $(this).val();
             if (searchValue.length < 2) {

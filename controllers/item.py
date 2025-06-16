@@ -314,7 +314,7 @@ def bulk_item():
         
         
         for i in range(total_row):
-            if i>=100:
+            if i>=10:
                 break
             else:
                 row_data=row_list[i]

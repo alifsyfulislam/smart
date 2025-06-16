@@ -119,7 +119,7 @@
             <thead>
                 <tr>
                     <th>Distributor</th>
-                    <th>Status</th>
+                    <!-- <th>Status</th> -->
                     <th>Store Code</th>
                     <th>Store Name</th>
                     <th>Store Type</th>
@@ -130,7 +130,7 @@
                 {{ for row in records: }}
                 <tr class="">
                     <td>{{=row.depot_id}} | {{=row.field1}}</td>
-                    <td>{{=row.note}}</td>
+                    <!-- <td>{{#=row.note}}</td> -->
                     <td>{{=row.store_id}}</td>
                     <td>{{=row.store_name}}</td>
                     <td>{{=row.store_type}}</td>

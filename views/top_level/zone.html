@@ -7,7 +7,9 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><i class="fa fa-folder-open"></i></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='index')}}">National</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL('top_level','index')}}">National</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL('top_level','area')}}">Area</a></li>
+                <li class="breadcrumb-item">{{=response.title}}</a></li>
                 <li id="toggleInputForm" class="ms-2" style="cursor: pointer;">
                     {{if session.btn_add_form != 'false':}}
                     <i class="fa fa-arrow-alt-circle-up"></i>
@@ -29,7 +31,7 @@
         <div class="d-flex flex-wrap gap-3 mt-2 p-2 border rounded {{='d-block' if session.btn_add_form != 'false' else 'd-none'}}" id="inputForm">
             <div class="flex-grow-1" style="flex: 1 1 48%; min-width: 300px;">
                 <div class="mb-1">
-                    <label for="nationalName" class="form-label">National Name</label>
+                    <label for="zoneName" class="form-label">Zone Name</label>
                     <div>
                         {{=form.custom.widget.level_name}}
                     </div>
@@ -47,12 +49,12 @@
     
     <!-- Part 2 -->
     <!-- Your Filter -->
-    <form id="search_form" name="search_form" method="post" action="{{=URL(c='top_level',f='index')}}">
+    <form id="search_form" name="search_form" method="post" action="{{=URL(c='top_level',f='zone',vars=dict(national_id=national_id,area_id=area_id))}}">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start flex-wrap bg-light p-2" style="font-size: 14px;">
             <div class="d-flex flex-column flex-md-row gap-2 align-items-left my-1">
                 <select id="searchParam" class="form-select form-select-sm select2 search-select" name="search_type">
                     <option value="">Select a type</option>
-                    <option value="NationalID" {{='selected' if session.search_type == 'NationalID' else '' }}>Code/Name
+                    <option value="ZoneID" {{='selected' if session.search_type == 'ZoneID' else '' }}>Code/Name
                     </option>
                 </select>
                 <div class="position-relative">
@@ -82,22 +84,24 @@
         <table id="dataTable" class="table table-striped table-bordered compact-table" style="width:100%">
             <thead>
                 <tr>
-                    <th>National Code</th>
-                    <th>National Name</th>
+                    <th>Zone Code</th>
+                    <th>Zone Name</th>
+                    <th>Area</th>
+                    <th>National</th>
                     <th>Updated By</th>
                 </tr>
             </thead>
             <tbody>
                 {{ for row in records: }}
                 <tr>
+                    <td>{{=row.level_id}}</td>
                     <td>
-                        {{=row.level_id}}
-                    </td>
-                    <td>
-                        <a class="m-0 p-0" href="{{=URL(c='top_level',f='area',vars=dict(national_id=row.level0))}}">
+                        <a class="m-0 p-0" href="{{=URL(c='top_level',f='territory',vars=dict(national_id = row.level0, area_id = row.level1, zone_id = row.level2))}}">
                             {{=row.level_name}}
                         </a>
                     </td>
+                    <td>{{=row.level1}} | {{=row.level1_name}}</td>
+                    <td>{{=row.level0}} | {{=row.level0_name}}</td>
                     <td>{{=row.updated_by}},<label class="raw-date">{{=row.updated_on}}</label></td>
                 </tr>
                 {{ pass }}
@@ -128,7 +132,7 @@
             scrollX: true,
             columnDefs: [
                 {
-                    targets: [0,1,2],
+                    targets: [0,1,2,3,4],
                     className: 'wrap-col',
                 }
             ],
@@ -189,7 +193,7 @@
                 $.ajax({
                     url: base_url + 'common_api/get_top_level',
                     type: 'POST',
-                    data: { parameter: searchParam,search: searchValue },
+                    data: { parameter: searchParam,search: searchValue, national_id : `{{=national_id}}`, area_id : `{{=area_id}}` },
                     success: function (data) {
                         $('#autocomplete-list').empty();
                         if (!data) return;

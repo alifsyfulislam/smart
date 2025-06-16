@@ -64,7 +64,7 @@
                     <ul class="nav flex-column ms-3">
                         {{if check_role('rm_workingarea_manage') == True or check_role('rm_workingarea_view') == True:}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link {{='active' if visited_controller == 'top_level' and visited_function =='index' else ''}}" title="National" 
+                            <a class="nav-link {{='active' if visited_controller == 'top_level' and visited_function in ['index','area','zone','territory'] else ''}}" title="National" 
                             href="{{=URL('top_level', 'index')}}"><i class="fab fa-unity"></i><span>National</span></a>
                         </li>
                         <li class="nav-item sub-menu-item">

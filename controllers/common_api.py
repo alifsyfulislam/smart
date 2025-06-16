@@ -17,6 +17,67 @@ def get_brand():
     )
     return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
 
+def get_brand_type():
+    cid = session.cid
+    brand_id = request.vars.brand_id or ''
+    search = request.vars.search or ''
+    
+    if cid == '' or cid == None or brand_id == '' or brand_id == None:
+        return
+    query = (db.sm_product_hierarchy.cid == cid) & (db.sm_product_hierarchy.depth == '2') & (db.sm_product_hierarchy.level1.contains(brand_id))
+    if search:
+        query &= (
+            (db.sm_product_hierarchy.level_name.contains(search)) |
+            (db.sm_product_hierarchy.level_id.contains(search))
+        )
+    rows = db(query).select(
+        db.sm_product_hierarchy.level_id,
+        db.sm_product_hierarchy.level_name,
+        orderby=~db.sm_product_hierarchy.level_id
+    )
+    return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
+
+def get_brand_type_flavor():
+    cid = session.cid
+    brand_id = request.vars.brand_id or ''
+    type_id = request.vars.type_id or ''
+    search = request.vars.search or ''
+    
+    if cid == '' or cid == None or brand_id == '' or brand_id == None:
+        return
+    query = (db.sm_product_hierarchy.cid == cid) & (db.sm_product_hierarchy.depth == '3') & (db.sm_product_hierarchy.level1.contains(brand_id)) & (db.sm_product_hierarchy.level2.contains(type_id))
+    if search:
+        query &= (
+            (db.sm_product_hierarchy.level_name.contains(search)) |
+            (db.sm_product_hierarchy.level_id.contains(search))
+        )
+    rows = db(query).select(
+        db.sm_product_hierarchy.level_id,
+        db.sm_product_hierarchy.level_name,
+        orderby=~db.sm_product_hierarchy.level_id
+    )
+    return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
+
+def get_unit():
+    cid = session.cid
+    type_name = request.vars.type_name or ''
+    search = request.vars.search or ''
+    
+    if cid == '' or cid == None:
+        return
+    query = (db.sm_category_type.cid == cid) & (db.sm_category_type.type_name == type_name)
+    if search:
+        query &= (
+            (db.sm_category_type.cat_type_id.contains(search)) |
+            (db.sm_category_type.cat_type_name.contains(search))
+        )
+    rows = db(query).select(
+        db.sm_category_type.cat_type_id,
+        db.sm_category_type.cat_type_name,
+        orderby=~db.sm_category_type.cat_type_id
+    )
+    return ','.join(f"{row.cat_type_id}|{row.cat_type_name}" for row in rows)
+
 def get_item():
     cid = session.cid
     parameter = request.vars.parameter or ''
@@ -135,68 +196,6 @@ def get_item():
         data =  ','.join(f"{row.status}" for row in rows)
     return data
 
-def get_brand_type():
-    cid = session.cid
-    brand_id = request.vars.brand_id or ''
-    search = request.vars.search or ''
-    
-    if cid == '' or cid == None or brand_id == '' or brand_id == None:
-        return
-    query = (db.sm_product_hierarchy.cid == cid) & (db.sm_product_hierarchy.depth == '2') & (db.sm_product_hierarchy.level1.contains(brand_id))
-    if search:
-        query &= (
-            (db.sm_product_hierarchy.level_name.contains(search)) |
-            (db.sm_product_hierarchy.level_id.contains(search))
-        )
-    rows = db(query).select(
-        db.sm_product_hierarchy.level_id,
-        db.sm_product_hierarchy.level_name,
-        orderby=~db.sm_product_hierarchy.level_id
-    )
-    return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
-
-
-def get_brand_type_flavor():
-    cid = session.cid
-    brand_id = request.vars.brand_id or ''
-    type_id = request.vars.type_id or ''
-    search = request.vars.search or ''
-    
-    if cid == '' or cid == None or brand_id == '' or brand_id == None:
-        return
-    query = (db.sm_product_hierarchy.cid == cid) & (db.sm_product_hierarchy.depth == '3') & (db.sm_product_hierarchy.level1.contains(brand_id)) & (db.sm_product_hierarchy.level2.contains(type_id))
-    if search:
-        query &= (
-            (db.sm_product_hierarchy.level_name.contains(search)) |
-            (db.sm_product_hierarchy.level_id.contains(search))
-        )
-    rows = db(query).select(
-        db.sm_product_hierarchy.level_id,
-        db.sm_product_hierarchy.level_name,
-        orderby=~db.sm_product_hierarchy.level_id
-    )
-    return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
-
-def get_unit():
-    cid = session.cid
-    type_name = request.vars.type_name or ''
-    search = request.vars.search or ''
-    
-    if cid == '' or cid == None:
-        return
-    query = (db.sm_category_type.cid == cid) & (db.sm_category_type.type_name == type_name)
-    if search:
-        query &= (
-            (db.sm_category_type.cat_type_id.contains(search)) |
-            (db.sm_category_type.cat_type_name.contains(search))
-        )
-    rows = db(query).select(
-        db.sm_category_type.cat_type_id,
-        db.sm_category_type.cat_type_name,
-        orderby=~db.sm_category_type.cat_type_id
-    )
-    return ','.join(f"{row.cat_type_id}|{row.cat_type_name}" for row in rows)
-
 def get_branch():
     cid = session.cid
     parameter = request.vars.parameter or ''
@@ -307,24 +306,67 @@ def get_depot():
         data =  ','.join(f"{row.status}" for row in rows)
     return data
 
-def get_national():
+def get_top_level():
     cid = session.cid
-    search = request.vars.search or ''
+    parameter = request.vars.parameter or ''
+    search = str(request.vars.search) or ''
+    national_id = str(request.vars.national_id).strip() if request.vars.national_id else ''
+    area_id = str(request.vars.area_id).strip() if request.vars.area_id else ''
     
-    if cid == '' or cid == None:
+    if cid == '' or cid == None or parameter == '' or parameter == None:
         return
-    query = (db.sm_top_level.cid == cid) & (db.sm_top_level.depth == '0')
-    if search:
+    
+    query = ''
+    rows = ''
+    data = ''
+    query = (db.sm_top_level.cid == cid)
+    
+    if national_id:
+        query &= (db.sm_top_level.level0 == national_id)
+
+    if area_id:
+        query &= (db.sm_top_level.level1 == area_id)
+    
+    if parameter == 'NationalID':
         query &= (
-            (db.sm_top_level.level_name.contains(search)) |
-            (db.sm_top_level.level_id.contains(search))
+            (
+                ((db.sm_top_level.level0.contains(search)) | (db.sm_top_level.level0_name.contains(search))) & 
+                (db.sm_top_level.depth == '0')
+            )
         )
-    rows = db(query).select(
-        db.sm_top_level.level_id,
-        db.sm_top_level.level_name,
-        orderby=db.sm_top_level.level_id
-    )
-    return ','.join(f"{row.level_id}|{row.level_name}" for row in rows)
+        rows = db(query).select(
+            db.sm_top_level.level_id,
+            db.sm_top_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+        
+    if parameter == 'AreaID':
+        query &= (
+            (
+                ((db.sm_top_level.level1.contains(search)) | (db.sm_top_level.level1_name.contains(search))) & 
+                (db.sm_top_level.depth == '1')
+            )
+        )
+        rows = db(query).select(
+            db.sm_top_level.level_id,
+            db.sm_top_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+        
+    if parameter == 'ZoneID':
+        query &= (
+            (
+                ((db.sm_top_level.level2.contains(search)) | (db.sm_top_level.level2_name.contains(search))) & 
+                (db.sm_top_level.depth == '2')
+            )
+        )
+        rows = db(query).select(
+            db.sm_top_level.level_id,
+            db.sm_top_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+    # return str(db._lastsql)
+    return data
 
 
 
