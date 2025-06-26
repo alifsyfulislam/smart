@@ -380,7 +380,7 @@ def index():
         searchParams=str(session.search_value).strip().split('|')      
         qset &= (db.sm_top_level.level0 == searchParams[0].strip().upper())
     
-    records=db(qset).select(db.sm_top_level.ALL,orderby=[db.sm_top_level.level_id,db.sm_top_level.level_name])
+    records=db(qset).select(db.sm_top_level.ALL,orderby=[~db.sm_top_level.level_id,db.sm_top_level.level_name])
     # return str(db._lastsql)
     totalCount=db(qset).count() 
     return locals()
@@ -596,7 +596,7 @@ def zone():
         searchParams=str(session.search_value).strip().split('|')      
         qset &= (db.sm_top_level.level2 == searchParams[0].strip().upper())
     
-    records=db(qset).select(db.sm_top_level.ALL,orderby=[db.sm_top_level.level_id,db.sm_top_level.level_name])
+    records=db(qset).select(db.sm_top_level.ALL,orderby=[~db.sm_top_level.level_id,db.sm_top_level.level_name])
     totalCount=db(qset).count() 
     return locals()
 
@@ -732,7 +732,7 @@ def territory():
         searchParams=str(session.search_value).strip().split('|')      
         qset &= (db.sm_top_level.level3 == searchParams[0].strip().upper())
     
-    records=db(qset).select(db.sm_top_level.ALL,orderby=[db.sm_top_level.level_id,db.sm_top_level.level_name])
+    records=db(qset).select(db.sm_top_level.ALL,orderby=[~db.sm_top_level.level_id,db.sm_top_level.level_name])
     # return str(db._lastsql)
     totalCount=db(qset).count() 
     return locals()
