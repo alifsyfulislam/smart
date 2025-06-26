@@ -4,8 +4,8 @@ def top_level_code_incr(input_str):
     result_str = prefix + incremented_numeric_part
     return result_str
 
-def top_level_2_code_incr(input_str):
-    prefix, numeric_part = input_str[:-2], input_str[-2:]
+def top_level_1_2_code_incr(input_str):
+    prefix, numeric_part = input_str[:-3], input_str[-3:]
     incremented_numeric_part = str(int(numeric_part) + 1).zfill(len(numeric_part))
     result_str = prefix + incremented_numeric_part
     return result_str
@@ -14,7 +14,7 @@ def national_validation(form):
     level_name = (form.vars.level_name or '').strip()
     level_id = ''
     if not level_name:
-        form.errors.level_name='National name can not be empty'
+        form.errors.level_name='National can not be empty'
         
     record=db(
         (db.sm_top_level.cid==session.cid) & 
@@ -36,6 +36,8 @@ def national_validation(form):
         form.vars.parent_level_name = ''
         form.vars.depth = '0'
         form.vars.is_leaf = '0'
+    else:
+        form.errors.level_name='Demo National'
         
 def area_validation(form):
     level_name = (form.vars.level_name or '').strip()
@@ -43,10 +45,10 @@ def area_validation(form):
     level_id = ''
     
     if not level0:
-        form.errors.level_name='National name can not be empty'
+        form.errors.level_name='National can not be empty'
     
     if not level_name:
-        form.errors.level_name='National name can not be empty'
+        form.errors.level_name='National can not be empty'
         
     records=db(
         (db.sm_top_level.cid==session.cid) & 
@@ -57,29 +59,230 @@ def area_validation(form):
         orderby=~db.sm_top_level.id,
     )
     
-    record = max((r for r in records if r.level0 == level0),key=lambda r: r.id,default=None)
+    p_records = [r for r in records if r.parent_level_id == level0]
     
-    if record:
-        level_id = top_level_2_code_incr(record.level_id)
-        form.vars.cid = session.cid
-        form.vars.level_id = level_id.upper()
-        form.vars.level_name = level_name.upper()
-        form.vars.level0_name = record.level0_name.upper()
-        form.vars.parent_level_id = record.level0.upper()
-        form.vars.parent_level_name = record.level0_name.upper()
-        form.vars.level1 = level_id.upper()
-        form.vars.level1_name = level_name.upper()
-        form.vars.depth = '1'
-        form.vars.is_leaf = '0'
+    record = max(
+        records,
+        key=lambda r: int(r.level_id[1:]) if r.level_id[1:].isdigit() else -1
+    )
+    
+    if p_records:
+        if record:
+            level_id = top_level_1_2_code_incr(record.level_id)
+            
+            form.vars.cid = session.cid
+            form.vars.level_id = level_id.upper()
+            form.vars.level_name = level_name.upper()
+            
+            form.vars.level0_name = p_records[0].level0_name.upper()
+            form.vars.parent_level_id = p_records[0].level0.upper()
+            form.vars.parent_level_name = p_records[0].level0_name.upper()
+            
+            form.vars.level1 = level_id.upper()
+            form.vars.level1_name = level_name.upper()
+            
+            form.vars.depth = '1'
+            form.vars.is_leaf = '0'
+        else:
+            form.errors.level_name='Demo Area'
     else:
-        form.errors.level_name='Demo Field'
+        row=db(
+            (db.sm_top_level.cid==session.cid) & 
+            (db.sm_top_level.level_id==level0)
+        ).select(
+            db.sm_top_level.ALL,
+            orderby=~db.sm_top_level.id,
+        ).first()
+        
+        if row:
+            level_id = top_level_1_2_code_incr(record.level_id)
+            
+            form.vars.cid = session.cid
+            form.vars.level_id = level_id.upper()
+            form.vars.level_name = level_name.upper()
+            
+            form.vars.level0_name = row.level0_name
+            form.vars.parent_level_id = row.level0
+            form.vars.parent_level_name = row.level0_name
+            
+            form.vars.level1 = level_id.upper()
+            form.vars.level1_name = level_name.upper()
+            
+            form.vars.depth = '1'
+            form.vars.is_leaf = '0'
+        else:
+            form.errors.level_name='National can not be empty'
         
 def zone_validation(form):
-    pass
+    level_name = (form.vars.level_name or '').strip()
+    level1     = (form.vars.level1 or '').strip()
+    level_id = ''
+    
+    if not level1:
+        form.errors.level_name='Area can not be empty'
+    
+    if not level_name:
+        form.errors.level_name='Area can not be empty'
+        
+    records=db(
+        (db.sm_top_level.cid==session.cid) & 
+        (db.sm_top_level.depth=='2') &
+        (db.sm_top_level.level2 !='ITZONE')
+    ).select(
+        db.sm_top_level.ALL,
+        orderby=~db.sm_top_level.id,
+    )
+    
+    p_records = [r for r in records if r.parent_level_id == level1]
+    record = max(
+        records,
+        key=lambda r: int(r.level_id[1:]) if r.level_id[1:].isdigit() else -1
+    )
+    if p_records:
+        if record:
+            level_id = top_level_1_2_code_incr(record.level_id)
+            
+            form.vars.cid = session.cid #smart
+            form.vars.level_id = level_id.upper() #zone
+            form.vars.level_name = level_name.upper() #zone
+            # National
+            form.vars.level0 = p_records[0].level0.upper() #hos
+            form.vars.level0_name = p_records[0].level0_name.upper() #hos
+            #Area
+            form.vars.level1 = p_records[0].level1.upper() #area
+            form.vars.level1_name = p_records[0].level1_name.upper() #area
+            #parent
+            form.vars.parent_level_id = p_records[0].level1.upper() #area
+            form.vars.parent_level_name = p_records[0].level1_name.upper() #area
+            #zone
+            form.vars.level2 = level_id.upper() #zone
+            form.vars.level2_name = level_name.upper() #zone
+            form.vars.depth = '2'
+            form.vars.is_leaf = '0'
+        else:
+            form.errors.level_name='Demo Zone'
+    else:
+        row=db(
+            (db.sm_top_level.cid==session.cid) & 
+            (db.sm_top_level.level_id==level1)
+        ).select(
+            db.sm_top_level.ALL,
+            orderby=~db.sm_top_level.id,
+        ).first()
+        
+        if row:
+            level_id = top_level_1_2_code_incr(record.level_id)
+            
+            form.vars.cid = session.cid
+            form.vars.level_id = level_id.upper()
+            form.vars.level_name = level_name.upper()
+            #National
+            form.vars.level0 = row.level0
+            form.vars.level0_name = row.level0_name
+            #Area
+            form.vars.level1 = row.level1
+            form.vars.level1_name = row.level1_name
+            #parent
+            form.vars.parent_level_id = row.level1
+            form.vars.parent_level_name = row.level1_name
+            #zone
+            form.vars.level2 = level_id.upper()
+            form.vars.level2_name = level_name.upper()
+            form.vars.depth = '2'
+            form.vars.is_leaf = '0'
+        else:
+            form.errors.level_name='Demo Zone'
 
 def territory_validation(form):
-    pass
+    level_info = (form.vars.level_name or '').strip()
+    level2     = (form.vars.level2 or '').strip()
+    level_id = level_info.split('|')[0]
+    level_name = level_info.split('|')[1]
+    
+    if not level2:
+        form.errors.level_name='Zone can not be empty'
+    
+    if not level_name:
+        form.errors.level_name='Zone can not be empty'
         
+    records=db(
+        (db.sm_top_level.cid==session.cid) & 
+        (db.sm_top_level.depth=='3')
+    ).select(
+        db.sm_top_level.ALL,
+        orderby=~db.sm_top_level.id,
+    )
+    
+    existRecord = []
+    existRecord = [r for r in records if r.level_id == level_id]
+    
+    if len(existRecord) > 0:
+        form.errors.level_name=f"Territory already exists in zone {existRecord[0].parent_level_id}|{existRecord[0].parent_level_name}"
+    else:
+        p_records = [r for r in records if r.parent_level_id == level2]
+        record = max(
+            records,
+            key=lambda r: int(r.level_id[1:]) if r.level_id[1:].isdigit() else -1
+        )
+        if p_records:
+            if record:
+                form.vars.cid = session.cid #smart
+                form.vars.level_id = level_id.upper() #ter
+                form.vars.level_name = level_name.upper() #ter
+                # National
+                form.vars.level0 = p_records[0].level0.upper() #hos
+                form.vars.level0_name = p_records[0].level0_name.upper() #hos
+                #Area
+                form.vars.level1 = p_records[0].level1.upper() #area
+                form.vars.level1_name = p_records[0].level1_name.upper() #area
+                #Zone
+                form.vars.level2 = p_records[0].level2.upper() #zone
+                form.vars.level2_name = p_records[0].level2_name.upper() #zone
+                #parent
+                form.vars.parent_level_id = p_records[0].level2.upper() #area
+                form.vars.parent_level_name = p_records[0].level2_name.upper() #area
+                #zone
+                form.vars.level3 = level_id.upper() #ter
+                form.vars.level3_name = level_name.upper() #ter
+                form.vars.depth = '3'
+                form.vars.is_leaf = '1'
+            else:
+                form.errors.level_name='Demo Territory'
+        else:
+            row=db(
+                (db.sm_top_level.cid==session.cid) & 
+                (db.sm_top_level.level_id==level2)
+            ).select(
+                db.sm_top_level.ALL,
+                orderby=~db.sm_top_level.id,
+            ).first()
+            
+            print(db._lastsql)
+            
+            if row:
+                form.vars.cid = session.cid
+                form.vars.level_id = level_id.upper()
+                form.vars.level_name = level_name.upper()
+                #National
+                form.vars.level0 = row.level0
+                form.vars.level0_name = row.level0_name
+                #Area
+                form.vars.level1 = row.level1
+                form.vars.level1_name = row.level1_name
+                #Zone
+                form.vars.level2 = row.level2
+                form.vars.level2_name = row.level2_name
+                #parent
+                form.vars.parent_level_id = row.level2
+                form.vars.parent_level_name = row.level2_name
+                #ter
+                form.vars.level3 = level_id.upper()
+                form.vars.level3_name = level_name.upper()
+                form.vars.depth = '3'
+                form.vars.is_leaf = '1'
+            else:
+                form.errors.level_name='Demo Territory'
+    #end if
 def index():
     
     div_topbar = True
@@ -321,6 +524,7 @@ def zone():
     btn_download=request.vars.btn_download if request.vars.btn_download else session.btn_download
     national_id=request.vars.national_id if request.vars.national_id else ''
     area_id=request.vars.area_id if request.vars.area_id else ''
+    zone_id=request.vars.zone_id if request.vars.zone_id else ''
     
     
     session.search_type=search_type
@@ -371,6 +575,8 @@ def zone():
         fields=['level_name'],
         submit_button='Save'
     )
+    # form.vars.level0 = national_id
+    form.vars.level1 = area_id
     
     if form.accepts(request.vars,session,onvalidation=zone_validation):
         session.flash = 'Data inserted successfully!'
@@ -474,11 +680,36 @@ def territory():
     else:
         page=0
         
-    # db.sm_top_level.level_id.readable  = True
+        
+    inusedRecords = db(
+        (db.sm_top_level.cid == session.cid) &
+        (db.sm_top_level.depth == '3')
+    ).select(
+        db.sm_top_level.level3, 
+        groupby=db.sm_top_level.level3
+    )
+    
+    inusedTerritory = [row.level3 for row in inusedRecords]
+    
+    unusedRecords = db(
+        (db.sm_level.cid == session.cid) & 
+        (db.sm_level.depth == '0')
+    ).select(
+        db.sm_level.level0,
+        db.sm_level.level0_name,
+        groupby=db.sm_level.level0,
+        orderby=~db.sm_level.level0
+    )
+    territory_list = [f"{row.level0}|{row.level0_name}" for row in unusedRecords]
+    db.sm_top_level.level_name.requires=IS_IN_SET(territory_list)
+    
     form =SQLFORM(db.sm_top_level,
         fields=['level_name'],
         submit_button='Save'
     )
+    # form.vars.level0 = national_id
+    # form.vars.level1 = area_id
+    form.vars.level2 = zone_id
     
     if form.accepts(request.vars,session,onvalidation=territory_validation):
         session.flash = 'Data inserted successfully!'

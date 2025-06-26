@@ -312,6 +312,7 @@ def get_top_level():
     search = str(request.vars.search) or ''
     national_id = str(request.vars.national_id).strip() if request.vars.national_id else ''
     area_id = str(request.vars.area_id).strip() if request.vars.area_id else ''
+    zone_id = str(request.vars.zone_id).strip() if request.vars.zone_id else ''
     
     if cid == '' or cid == None or parameter == '' or parameter == None:
         return
@@ -326,6 +327,9 @@ def get_top_level():
 
     if area_id:
         query &= (db.sm_top_level.level1 == area_id)
+        
+    if zone_id:
+        query &= (db.sm_top_level.level2 == zone_id)
     
     if parameter == 'NationalID':
         query &= (
@@ -358,6 +362,19 @@ def get_top_level():
             (
                 ((db.sm_top_level.level2.contains(search)) | (db.sm_top_level.level2_name.contains(search))) & 
                 (db.sm_top_level.depth == '2')
+            )
+        )
+        rows = db(query).select(
+            db.sm_top_level.level_id,
+            db.sm_top_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+        
+    if parameter == 'TerritoryID':
+        query &= (
+            (
+                ((db.sm_top_level.level3.contains(search)) | (db.sm_top_level.level3_name.contains(search))) & 
+                (db.sm_top_level.depth == '3')
             )
         )
         rows = db(query).select(

@@ -7,9 +7,9 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><i class="fa fa-folder-open"></i></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='index',vars=dict(national_id=national_id))}}">National</a></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='area',vars=dict(national_id=national_id,area_id=area_id))}}">Area</a></li>
-                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='zone',vars=dict(national_id=national_id,area_id=area_id,zone_id=zone_id))}}">Zone</a></li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='index')}}">National</a> ({{=national_id}}|{{=records[0].level0_name if records else ''}})</li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='area',vars=dict(national_id=national_id,area_id=area_id))}}">Area</a> ({{=area_id}}|{{=records[0].level1_name if records else ''}})</li>
+                <li class="breadcrumb-item"><a class="" href="{{=URL(c='top_level',f='zone',vars=dict(national_id=national_id,area_id=area_id,zone_id=zone_id))}}">Zone</a>({{=zone_id}}|{{=records[0].level2_name if records else ''}})</li>
                 <li class="breadcrumb-item">{{=response.title}}</a></li>
                 <li id="toggleInputForm" class="ms-2" style="cursor: pointer;">
                     {{if session.btn_add_form != 'false':}}
@@ -35,6 +35,7 @@
                     <label for="territoryName" class="form-label">Territory Name</label>
                     <div>
                         {{=form.custom.widget.level_name}}
+                        <input type="hidden" name="level2" class="form-control" value="{{=zone_id}}">
                     </div>
                 </div>
             </div>
@@ -163,7 +164,7 @@
             $(this).text(formatted);
         });
 
-        $('.select2').select2({
+        $('.select2, #sm_top_level_level_name').select2({
             multiple: false,
             tags: false, 
             allowClear: true,
@@ -192,7 +193,7 @@
                 $.ajax({
                     url: base_url + 'common_api/get_top_level',
                     type: 'POST',
-                    data: { parameter: searchParam,search: searchValue, national_id : `{{=national_id}}`, area_id : `{{=area_id}}` },
+                    data: { parameter: searchParam,search: searchValue, national_id : `{{=national_id}}`, area_id : `{{=area_id}}`, zone_id:`{{=zone_id}}` },
                     success: function (data) {
                         $('#autocomplete-list').empty();
                         if (!data) return;

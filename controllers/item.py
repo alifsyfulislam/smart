@@ -520,7 +520,7 @@ def add():
     # return str(allowed_units)
     
     flavorRecords = db(
-        (db.sm_product_hierarchy.cid == 'SMART') & 
+        (db.sm_product_hierarchy.cid == cid) & 
         (db.sm_product_hierarchy.depth == 3)
     ).select(
         db.sm_product_hierarchy.level_id.with_alias('flavor_id'),
@@ -679,7 +679,7 @@ def edit():
     # return str(allowed_units)
     
     flavorRecords = db(
-        (db.sm_product_hierarchy.cid == 'SMART') & 
+        (db.sm_product_hierarchy.cid == cid) & 
         (db.sm_product_hierarchy.depth == 3)
     ).select(
         db.sm_product_hierarchy.level_id.with_alias('flavor_id'),
