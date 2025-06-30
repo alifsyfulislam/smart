@@ -385,6 +385,85 @@ def get_top_level():
     # return str(db._lastsql)
     return data
 
+def get_level():
+    cid = session.cid
+    parameter = request.vars.parameter or ''
+    search = str(request.vars.search) or ''
+    territory_id = str(request.vars.territory_id).strip() if request.vars.territory_id else ''
+    town_id = str(request.vars.town_id).strip() if request.vars.town_id else ''
+    route_id = str(request.vars.route_id).strip() if request.vars.route_id else ''
+    
+    if cid == '' or cid == None or parameter == '' or parameter == None:
+        return
+    
+    query = ''
+    rows = ''
+    data = ''
+    query = (db.sm_level.cid == cid)
+    
+    if territory_id:
+        query &= (db.sm_level.level0 == territory_id)
+
+    if town_id:
+        query &= (db.sm_level.level1 == town_id)
+        
+    if route_id:
+        query &= (db.sm_level.level2 == route_id)
+    
+    if parameter == 'TerritoryID':
+        query &= (
+            (
+                ((db.sm_level.level0.contains(search)) | (db.sm_level.level0_name.contains(search))) & 
+                (db.sm_level.depth == '0')
+            )
+        )
+        rows = db(query).select(
+            db.sm_level.level_id,
+            db.sm_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+        
+    if parameter == 'TownID':
+        query &= (
+            (
+                ((db.sm_level.level1.contains(search)) | (db.sm_level.level1_name.contains(search))) & 
+                (db.sm_level.depth == '1')
+            )
+        )
+        rows = db(query).select(
+            db.sm_level.level_id,
+            db.sm_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+        
+    if parameter == 'RouteID':
+        query &= (
+            (
+                ((db.sm_level.level2.contains(search)) | (db.sm_level.level2_name.contains(search))) & 
+                (db.sm_level.depth == '2')
+            )
+        )
+        rows = db(query).select(
+            db.sm_level.level_id,
+            db.sm_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+        
+    if parameter == 'BeatID':
+        query &= (
+            (
+                ((db.sm_level.level3.contains(search)) | (db.sm_level.level3_name.contains(search))) & 
+                (db.sm_level.depth == '3')
+            )
+        )
+        rows = db(query).select(
+            db.sm_level.level_id,
+            db.sm_level.level_name
+        )
+        data =  ','.join(f"{row.level_id} | {row.level_name}" for row in rows)
+    # return str(db._lastsql)
+    return data
+
 
 
 
