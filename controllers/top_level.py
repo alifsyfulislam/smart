@@ -48,7 +48,7 @@ def area_validation(form):
         form.errors.level_name='National can not be empty'
     
     if not level_name:
-        form.errors.level_name='National can not be empty'
+        form.errors.level_name='Area can not be empty'
         
     records=db(
         (db.sm_top_level.cid==session.cid) & 
@@ -122,7 +122,7 @@ def zone_validation(form):
         form.errors.level_name='Area can not be empty'
     
     if not level_name:
-        form.errors.level_name='Area can not be empty'
+        form.errors.level_name='Zone can not be empty'
         
     records=db(
         (db.sm_top_level.cid==session.cid) & 
@@ -339,7 +339,8 @@ def index():
         redirect(URL(c='top_level', f='download_excel',vars=dict(
             btn_download=btn_download,
             search_type=search_type,
-            search_value=search_value
+            search_value=search_value,
+            national_id = national_id
         )))
     if btn_all:
         session.btn_filter=None
@@ -442,7 +443,9 @@ def area():
         redirect(URL(c='top_level', f='download_excel',vars=dict(
             btn_download=btn_download,
             search_type=search_type,
-            search_value=search_value
+            search_value=search_value,
+            national_id = national_id,
+            area_id=area_id
         )))
     if btn_all:
         session.btn_filter=None
@@ -550,7 +553,10 @@ def zone():
         redirect(URL(c='top_level', f='download_excel',vars=dict(
             btn_download=btn_download,
             search_type=search_type,
-            search_value=search_value
+            search_value=search_value,
+            national_id = national_id,
+            area_id=area_id,
+            zone_id=zone_id
         )))
     if btn_all:
         session.btn_filter=None
@@ -660,7 +666,10 @@ def territory():
         redirect(URL(c='top_level', f='download_excel',vars=dict(
             btn_download=btn_download,
             search_type=search_type,
-            search_value=search_value
+            search_value=search_value,
+            national_id = national_id,
+            area_id=area_id,
+            zone_id=zone_id
         )))
     if btn_all:
         session.btn_filter=None
@@ -748,9 +757,21 @@ def download_excel():
     btn_download=str(request.vars.btn_download)
     search_type=str(request.vars.search_type)
     search_value=str(request.vars.search_value)
+    national_id=request.vars.national_id if request.vars.national_id else ''
+    area_id=request.vars.area_id if request.vars.area_id else ''
+    zone_id=request.vars.zone_id if request.vars.zone_id else ''
 
     # Query
     qset = (db.sm_top_level.cid == session.cid)
+    
+    if (national_id):
+        qset &= (db.sm_top_level.level0 == national_id)
+        
+    if (area_id):
+        qset &= (db.sm_top_level.level1 == area_id)
+        
+    if (zone_id):
+        qset &= (db.sm_top_level.level2 == zone_id)
     
     if btn_download and search_type == 'NationalID':
         searchValue = str(search_value).split('|')[0].strip()
