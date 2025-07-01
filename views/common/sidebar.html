@@ -64,18 +64,20 @@
                     <ul class="nav flex-column ms-3">
                         {{if check_role('rm_workingarea_manage') == True or check_role('rm_workingarea_view') == True:}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link {{='active' if visited_controller == 'top_level' and visited_function in ['index','area','zone','territory'] else ''}}" title="National" 
-                            href="{{=URL('top_level', 'index')}}"><i class="fab fa-unity"></i><span>National</span></a>
-                        </li>
-                        <li class="nav-item sub-menu-item">
                             <a class="nav-link {{='active' if visited_controller == 'level' and visited_function =='index' else ''}}" title="Field" 
                             href="{{=URL('level', 'index')}}"><i class="fas fa-project-diagram"></i><span>Field</span></a>
                         </li>
-                        {{pass}}
                         <li class="nav-item sub-menu-item">
-                            <a class="nav-link" title="Supervisor" href="#"><i class="fas fa-user-cog"></i><span>Supervisor</span></a>
+                            <a class="nav-link {{='active' if visited_controller == 'top_level' and visited_function in ['index','area','zone','territory'] else ''}}" title="National" 
+                            href="{{=URL('top_level', 'index')}}"><i class="fab fa-unity"></i><span>National</span></a>
                         </li>
-
+                        {{pass}}
+                        {{if check_role('rm_sup_manage') == True or check_role('rm_sup_view') == True:}}
+                        <li class="nav-item sub-menu-item">
+                            <a class="nav-link {{='active' if visited_controller == 'supervisor' and visited_function in ['index'] else ''}}" title="Supervisor" 
+                            href="{{=URL('supervisor', 'index')}}"><i class="fas fa-user-cog"></i><span>Supervisor</span></a>
+                        </li>
+                        {{pass}}
                         <li class="nav-item sub-menu-item">
                             <a class="nav-link" title="Supervisor Area" href="#"><i class="fas fa-user-gear"></i><span>Supervisor Area</span></a>
                         </li>
