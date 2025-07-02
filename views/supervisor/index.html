@@ -24,14 +24,9 @@
         <h5 class="my-1 table-title d-flex align-items-center justify-content-between">{{=response.title}}</h5>
         <div class="d-flex flex-wrap gap-2 my-1 {{='d-block' if access_permission == True else 'd-none'}}">
             {{if visited_controller not in ['brand'] and access_permission==True:}}
-
             <a href="{{#=URL(c='depot',f='bulk_depot')}}" class="btn smart-btn btn-outline-secondary btn-sm" name="btn_upload" value="Upload">
                 <i class="fa fa-upload"></i> Bulk Add
             </a>
-
-            <!-- <a href="" class="btn smart-btn btn-outline-secondary btn-sm">
-                <i class="fa fa-refresh"></i> Sync DB
-            </a> -->
             {{pass}}
         </div>
     </div>
@@ -46,6 +41,7 @@
                     <option value="">Select a type</option>
                     <option value="SupID" {{='selected' if session.search_type == 'SupID' else '' }}> Supervisor
                     </option>
+                    <option value="Designation" {{='selected' if session.search_type == 'Designation' else '' }}> Designation
                     </option>
                     <option value="Status" {{='selected' if session.search_type == 'Status' else '' }}> Status
                     </option>
@@ -78,8 +74,7 @@
             <thead>
                 <tr>
                     <th>Designation</th>
-                    <th>Sup ID</th>
-                    <th>Sup Name</th>
+                    <th>Supervisor</th>
                     <th>Username</th>
                     <th>Contact</th>
                     <th>Status</th>
@@ -97,9 +92,6 @@
                         {{=form.custom.widget.note}}
                     </td>
                     <td>
-                        {{=form.custom.widget.rep_id}}
-                    </td>
-                    <td>
                         {{=form.custom.widget.name}}
                     </td>
                     <td>
@@ -112,28 +104,27 @@
                         {{=form.custom.widget.status}}
                     </td>
                     <td>
-                        {{=session.user_id}}
+                        
                     </td>
                     <td>
-                        <a href="{{=URL(c='depot',f='add')}}" class="btn smart-btn btn-outline-secondary btn-sm btn-xs" style="width: 30px;">
+                        <button type="submit" value="Save" name="btn_save" class="btn smart-btn btn-outline-secondary btn-sm btn-xs" style="width: 30px !important;">
                             <i class="fa fa-save"></i>
-                        </a>
+                        </button>
                     </td>
                 </tr>
                 {{=form.custom.end}}
                 {{pass}}
                 {{ for row in records: }}
                 <tr class="">
-                    <td>{{=row.note}}</td>
-                    <td>{{=row.rep_id}}</td>
-                    <td>{{=row.name}}</td>
+                    <td>{{=row.designation_name}}</td>
+                    <td>{{=row.rep_id}} | {{=row.name}}</td>
                     <td>{{=row.rep_username}}</td>
                     <td>{{=row.mobile_no}}</td>
                     <td>{{=row.status}}</td>
                     <td>{{=row.updated_by}},<label class="raw-date">{{=row.updated_on}}</label></td>
                     {{if access_permission==True:}}
                     <td>
-                        <a href="{{=URL(c='depot',f='edit',vars=dict(rid=row.id, rmode='edit'))}}" class="btn smart-btn btn-outline-secondary btn-sm btn-xs" style="width: 30px;">
+                        <a href="{{=URL(c='supervisor',f='edit',vars=dict(rid=row.id, rmode='edit'))}}" class="btn smart-btn btn-outline-secondary btn-sm btn-xs" style="width: 30px;">
                             <i class="fa fa-edit"></i>
                         </a>
                     </td>
@@ -200,7 +191,7 @@
             placeholder: "Select a type"
         });
 
-        $('#sm_sup_depot_status').select2({
+        $('#sm_rep_note,#sm_rep_status').select2({
             multiple: false,
             tags: false, 
             allowClear: true,
@@ -210,12 +201,6 @@
         $('#searchParam').val(`{{=session.search_type}}`)
         $('#searchInput').val(`{{=session.search_value}}`)
         $('#dataTable').DataTable({
-            /*createdRow: function (row, data, dataIndex) {
-                if (data[7] == '0') {
-                    console.log(data)
-                    $(row).css('background-color', '#ffcccc !important');  // Bootstrap warning yellow
-                }
-            },*/
             paging: false,
             info: false,
             searching: false,
@@ -280,7 +265,7 @@
                     '<div class="list-group-item text-center"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</div>'
                 );
                 $.ajax({
-                    url: base_url + 'common_api/get_depot',
+                    url: base_url + 'common_api/get_supervisor',
                     type: 'POST',
                     data: { parameter: searchParam,search: searchValue },
                     success: function (data) {
@@ -296,7 +281,7 @@
                                 );
                             });
                         }
-                        if (searchParam == 'DepotID'){
+                        if (searchParam == 'SupID'){
                             items.forEach(item => {
                                 if (item.trim() === '') return;
                                 let parts = item.split('|');
@@ -305,27 +290,7 @@
                                 );
                             });
                         }
-                        if (searchParam == 'TownID'){
-                            items.forEach(item => {
-                                if (item.trim() === '') return;
-                                let parts = item.split('|');
-                                $('#autocomplete-list').append(
-                                    `<button type="button" class="list-group-item list-group-item-action" data-id="${parts[0]}" data-info="${parts[0]}|${parts[1]}">${parts[0]} | ${parts[1]}</button>`
-                                );
-                            });
-                        }
-
-                        if (searchParam == 'OperateBy'){
-                            items.forEach(item => {
-                                if (item.trim() === '') return;
-                                let parts = item.split('|');
-                                $('#autocomplete-list').append(
-                                    `<button type="button" class="list-group-item list-group-item-action" data-id="${parts[0]}" data-info="${parts[0]}|${parts[1]}">${parts[0]} | ${parts[1]}</button>`
-                                );
-                            });
-                        }
-
-                        if (searchParam == 'OperateFlag'){
+                        if (searchParam == 'Designation'){
                             items.forEach(item => {
                                 if (item.trim() === '') return;
                                 let parts = item.split('|');

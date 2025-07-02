@@ -99,25 +99,17 @@ def index():
         (db.sm_rep.user_type=='sup')
     )
     
-    if (session.btn_filter and session.search_type=='DepotID'):
+    if (session.btn_filter and session.search_type=='SupID'):
         searchParams=str(session.search_value).strip().split('|')      
-        qset=qset(db.sm_depot.depot_id == searchParams[0].strip().upper())
+        qset=qset(db.sm_depot.sup_id == searchParams[0].strip().upper())
         
-    if (session.btn_filter and session.search_type=='TownID'):
+    if (session.btn_filter and session.search_type=='Designation'):
         searchParams=str(session.search_value).strip().split('|')      
-        qset=qset(db.sm_depot.town_id == searchParams[0].strip().upper())
-        
-    if (session.btn_filter and session.search_type=='OperateBy'):
-        searchParams=str(session.search_value).strip().split('|')      
-        qset=qset(db.sm_depot.approval_flag == searchParams[0].strip().upper())
-        
-    if (session.btn_filter and session.search_type=='OperateFlag'):
-        searchParams=str(session.search_value).strip().split('|')      
-        qset=qset(db.sm_depot.auto_del_cron_flag == searchParams[0].strip().upper())
+        qset=qset(db.sm_rep.designation == searchParams[0].strip().upper())
         
     if (session.btn_filter and session.search_type=='Status'):
         searchParams=str(session.search_value).strip()       
-        qset=qset(db.sm_depot.status == searchParams.upper())
+        qset=qset(db.sm_rep.status == searchParams.upper())
     
     # return db._lastsql
     records=qset.select(db.sm_rep.ALL,orderby=[~db.sm_rep.id,db.sm_rep.rep_id,db.sm_rep.name],limitby=limitby)
